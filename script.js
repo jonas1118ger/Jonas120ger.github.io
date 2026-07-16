@@ -75,3 +75,19 @@ function drawCard(){
 document.getElementById("drawButton").addEventListener("click",drawCard);
 
 document.getElementById("deck").addEventListener("click",drawCard);
+
+function toggleSettings(){
+
+    const panel=document.getElementById("settingsPanel");
+
+    if(panel.style.display==="block"){
+
+        panel.style.display="none";
+
+    }else{
+
+        panel.style.display="block";
+
+    }
+
+}
