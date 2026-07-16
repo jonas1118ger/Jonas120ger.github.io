@@ -73,3 +73,56 @@ button{
         transform:translateY(0);
     }
 }
+
+#settingsButton{
+
+    margin-top:25px;
+    padding:12px 25px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:#1d3557;
+    color:white;
+
+}
+
+#settingsButton:hover{
+
+    background:#2d4b7a;
+
+}
+
+.settings-panel{
+
+    display:none;
+
+    width:340px;
+
+    margin:25px auto;
+
+    padding:20px;
+
+    background:white;
+
+    border-radius:15px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+
+}
+
+.settings-panel input,
+.settings-panel textarea,
+.settings-panel select{
+
+    width:90%;
+    padding:10px;
+    font-size:16px;
+
+}
+
+.settings-panel button{
+
+    margin-top:10px;
+
+}
