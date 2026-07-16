@@ -20,6 +20,39 @@
         Karte ziehen
     </button>
 
+    <hr>
+
+<h2>Karten verwalten</h2>
+
+<input id="titleInput" placeholder="Kartentitel">
+
+<br><br>
+
+<textarea
+id="textInput"
+placeholder="Kartentext"
+rows="4"
+cols="40"></textarea>
+
+<br><br>
+
+<input
+type="color"
+id="colorInput"
+value="#ffffff">
+
+<button onclick="addCard()">
+Karte hinzufügen
+</button>
+
+<br><br>
+
+<select id="deleteSelect"></select>
+
+<button onclick="deleteCard()">
+Karte löschen
+</button>
+
 </div>
 
 <div id="cardContainer"></div>
