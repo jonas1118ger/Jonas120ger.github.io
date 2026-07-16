@@ -24,6 +24,14 @@
 
 <h2>Karten verwalten</h2>
 
+<button id="settingsButton" onclick="toggleSettings()">
+⚙️ Einstellungen
+</button>
+
+<div id="settingsPanel" class="settings-panel">
+
+<h2>Karten verwalten</h2>
+
 <input id="titleInput" placeholder="Kartentitel">
 
 <br><br>
@@ -36,21 +44,24 @@ cols="40"></textarea>
 
 <br><br>
 
+<label>Kartenfarbe:</label>
 <input
 type="color"
 id="colorInput"
 value="#ffffff">
 
+<br><br>
+
 <button onclick="addCard()">
-Karte hinzufügen
+➕ Karte hinzufügen
 </button>
 
-<br><br>
+<hr>
 
 <select id="deleteSelect"></select>
 
 <button onclick="deleteCard()">
-Karte löschen
+🗑️ Karte löschen
 </button>
 
 </div>
