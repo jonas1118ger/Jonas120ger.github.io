@@ -3,66 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kartenstapel</title>
+    <title>🍺 Bierkarten</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h1>🎴 Kartenstapel</h1>
+<header>
 
-<div class="deck-area">
+    <h1>🍺 Bierkarten</h1>
 
-    <div id="deck" class="deck">
-        🍻
-    </div>
-
-    <button id="drawButton">
-        Karte ziehen
+    <button id="settingsButton" onclick="toggleSettings()">
+        ⚙️
     </button>
 
-<button id="settingsButton" onclick="toggleSettings()">
-⚙️ Einstellungen
-</button>
+</header>
 
-<div id="settingsPanel" class="settings-panel">
+<main>
 
-<h2>Karten verwalten</h2>
+    <div class="deck-area">
 
-<input id="titleInput" placeholder="Kartentitel">
+        <div id="deck" class="deck">
+            🍺
+        </div>
 
-<br><br>
+        <button id="drawButton">
+            Karte ziehen
+        </button>
 
-<textarea
-id="textInput"
-placeholder="Kartentext"
-rows="4"
-cols="40"></textarea>
+    </div>
 
-<br><br>
+    <div id="cardContainer"></div>
 
-<label>Kartenfarbe:</label>
-<input
-type="color"
-id="colorInput"
-value="#ffffff">
+</main>
 
-<br><br>
 
-<button onclick="addCard()">
-➕ Karte hinzufügen
-</button>
+<!-- Einstellungen -->
 
-<hr>
+<div id="settingsOverlay" class="overlay">
 
-<select id="deleteSelect"></select>
+    <div class="settingsWindow">
 
-<button onclick="deleteCard()">
-🗑️ Karte löschen
-</button>
+        <div class="settingsHeader">
+
+            <h2>⚙️ Einstellungen</h2>
+
+            <button class="closeButton" onclick="toggleSettings()">
+                ✖
+            </button>
+
+        </div>
+
+        <hr>
+
+        <h3>Neue Karte</h3>
+
+        <input
+            id="titleInput"
+            type="text"
+            placeholder="Titel">
+
+        <textarea
+            id="textInput"
+            placeholder="Kartentext"
+            rows="5"></textarea>
+
+        <label>
+
+            Kartenfarbe
+
+            <input
+                id="colorInput"
+                type="color"
+                value="#ffffff">
+
+        </label>
+
+        <button onclick="addCard()">
+            ➕ Karte hinzufügen
+        </button>
+
+        <hr>
+
+        <h3>Karten löschen</h3>
+
+        <select id="deleteSelect"></select>
+
+        <button onclick="deleteCard()">
+            🗑️ Karte löschen
+        </button>
+
+    </div>
 
 </div>
-
-<div id="cardContainer"></div>
 
 <script src="script.js"></script>
 
