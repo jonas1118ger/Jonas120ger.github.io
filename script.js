@@ -66,6 +66,22 @@ shuffle(deck);
 // -----------------------------
 // Karte ziehen
 // -----------------------------
+function replaceVariables(text) {
+
+    return text.replace(/\{(\d+)-(\d+)\}/g, function(match, min, max) {
+
+        min = parseInt(min);
+        max = parseInt(max);
+
+        const random =
+            Math.floor(Math.random() * (max - min + 1)) + min;
+
+        return random;
+
+    });
+
+}
+
 function drawCard() {
 
     if (deck.length === 0) {
@@ -84,7 +100,7 @@ function drawCard() {
         <div class="card" style="background:${card.color}">
             <h2>${card.title}</h2>
 
-            <p>${card.text}</p>
+            <p>${replaceVariables(card.text)}</p>
 
             <small>Noch ${deck.length} Karten im Stapel</small>
         </div>
