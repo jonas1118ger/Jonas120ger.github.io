@@ -242,6 +242,10 @@ main{
     width:90%;
     max-width:420px;
 
+    max-height:85vh;
+
+    overflow-y:auto;
+
     background:white;
 
     border-radius:20px;
