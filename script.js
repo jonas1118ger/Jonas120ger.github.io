@@ -1,93 +1,206 @@
-const cards = [
-{
-    title: "Mut",
-    text: "Heute darfst du einen kleinen Schritt aus deiner Komfortzone wagen."
-},
-{
-    title: "Dankbarkeit",
-    text: "Denke heute an drei Dinge, für die du wirklich dankbar bist."
-},
-{
-    title: "Ruhe",
-    text: "Nimm dir bewusst fünf Minuten Zeit nur für dich."
-},
-{
-    title: "Kreativität",
-    text: "Probiere heute etwas aus, das du noch nie gemacht hast."
-},
-{
-    title: "Vertrauen",
-    text: "Nicht alles muss heute kontrolliert werden."
-},
-{
-    title: "Freude",
-    text: "Suche heute bewusst nach einem kleinen Glücksmoment."
-},
-{
-    title: "Neuanfang",
-    text: "Jeder Tag bietet die Möglichkeit, neu zu beginnen."
-},
-{
-    title: "Gelassenheit",
-    text: "Konzentriere dich auf das, was du beeinflussen kannst."
-}
+// -----------------------------
+// Standardkarten
+// -----------------------------
+const defaultCards = [
+    {
+        title: "Mut",
+        text: "Heute darfst du einen kleinen Schritt aus deiner Komfortzone wagen.",
+        color: "#ffffff"
+    },
+    {
+        title: "Dankbarkeit",
+        text: "Denke heute an drei Dinge, für die du wirklich dankbar bist.",
+        color: "#fff5b7"
+    },
+    {
+        title: "Ruhe",
+        text: "Nimm dir bewusst fünf Minuten Zeit nur für dich.",
+        color: "#d9f7ff"
+    },
+    {
+        title: "Freude",
+        text: "Suche heute bewusst nach einem kleinen Glücksmoment.",
+        color: "#ffe0b2"
+    }
 ];
+
+// -----------------------------
+// Karten laden
+// -----------------------------
+let cards = JSON.parse(localStorage.getItem("cards"));
+
+if (!cards) {
+    cards = [...defaultCards];
+    saveCards();
+}
 
 let deck = [...cards];
 
 const container = document.getElementById("cardContainer");
 
-function shuffle(array){
+// -----------------------------
+// Speichern
+// -----------------------------
+function saveCards() {
+    localStorage.setItem("cards", JSON.stringify(cards));
+    refreshDeleteList();
+}
 
-    for(let i=array.length-1;i>0;i--){
+// -----------------------------
+// Mischen
+// -----------------------------
+function shuffle(array) {
 
-        const j=Math.floor(Math.random()*(i+1));
+    for (let i = array.length - 1; i > 0; i--) {
 
-        [array[i],array[j]]=[array[j],array[i]];
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [array[i], array[j]] = [array[j], array[i]];
+
     }
 
 }
 
 shuffle(deck);
 
-function drawCard(){
+// -----------------------------
+// Karte ziehen
+// -----------------------------
+function drawCard() {
 
-    if(deck.length===0){
+    if (deck.length === 0) {
 
         alert("Alle Karten wurden gezogen. Der Stapel wird neu gemischt.");
 
-        deck=[...cards];
+        deck = [...cards];
 
         shuffle(deck);
+
     }
 
-    const card=deck.pop();
+    const card = deck.pop();
 
-    container.innerHTML=`
-        <div class="card">
+    container.innerHTML = `
+        <div class="card" style="background:${card.color}">
             <h2>${card.title}</h2>
+
             <p>${card.text}</p>
+
             <small>Noch ${deck.length} Karten im Stapel</small>
         </div>
     `;
+
 }
 
-document.getElementById("drawButton").addEventListener("click",drawCard);
+// -----------------------------
+// Neue Karte
+// -----------------------------
+function addCard() {
 
-document.getElementById("deck").addEventListener("click",drawCard);
+    const title = document.getElementById("titleInput").value.trim();
 
-function toggleSettings(){
+    const text = document.getElementById("textInput").value.trim();
 
-    const panel=document.getElementById("settingsPanel");
+    const color = document.getElementById("colorInput").value;
 
-    if(panel.style.display==="block"){
+    if (title === "" || text === "") {
 
-        panel.style.display="none";
+        alert("Bitte Titel und Text eingeben.");
 
-    }else{
+        return;
 
-        panel.style.display="block";
+    }
+
+    cards.push({
+        title,
+        text,
+        color
+    });
+
+    saveCards();
+
+    deck = [...cards];
+
+    shuffle(deck);
+
+    document.getElementById("titleInput").value = "";
+    document.getElementById("textInput").value = "";
+
+    alert("Karte hinzugefügt.");
+
+}
+
+// -----------------------------
+// Karte löschen
+// -----------------------------
+function deleteCard() {
+
+    const index = document.getElementById("deleteSelect").value;
+
+    if (index === "") return;
+
+    cards.splice(index, 1);
+
+    saveCards();
+
+    deck = [...cards];
+
+    shuffle(deck);
+
+    container.innerHTML = "";
+
+}
+
+// -----------------------------
+// Dropdown aktualisieren
+// -----------------------------
+function refreshDeleteList() {
+
+    const select = document.getElementById("deleteSelect");
+
+    select.innerHTML = "";
+
+    cards.forEach((card, index) => {
+
+        const option = document.createElement("option");
+
+        option.value = index;
+
+        option.textContent = card.title;
+
+        select.appendChild(option);
+
+    });
+
+}
+
+// -----------------------------
+// Einstellungen öffnen/schließen
+// -----------------------------
+function toggleSettings() {
+
+    const overlay = document.getElementById("settingsOverlay");
+
+    if (overlay.style.display === "flex") {
+
+        overlay.style.display = "none";
+
+    } else {
+
+        overlay.style.display = "flex";
 
     }
 
 }
+
+// -----------------------------
+// Events
+// -----------------------------
+document.getElementById("drawButton").addEventListener("click", drawCard);
+
+document.getElementById("deck").addEventListener("click", drawCard);
+
+// -----------------------------
+// Initialisieren
+// -----------------------------
+refreshDeleteList();
