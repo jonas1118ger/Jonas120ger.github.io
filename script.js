@@ -35,15 +35,19 @@ if (!cards) {
 }
 
 let deck = [...cards];
+let currentCard = -1;
 
 const container = document.getElementById("cardContainer");
 
 // -----------------------------
 // Speichern
 // -----------------------------
-function saveCards() {
-    localStorage.setItem("cards", JSON.stringify(cards));
-    refreshDeleteList();
+function saveCards(){
+
+    localStorage.setItem("cards",JSON.stringify(cards));
+
+    refreshCardList();
+
 }
 
 // -----------------------------
@@ -108,6 +112,106 @@ function drawCard() {
 
 }
 
+function refreshCardList(){
+
+    const select=document.getElementById("cardSelect");
+
+    select.innerHTML="";
+
+    cards.forEach((card,index)=>{
+
+        const option=document.createElement("option");
+
+        option.value=index;
+
+        option.textContent=card.title;
+
+        select.appendChild(option);
+
+    });
+
+}
+
+function loadSelectedCard(){
+
+    currentCard=document.getElementById("cardSelect").value;
+
+    const card=cards[currentCard];
+
+    document.getElementById("titleInput").value=card.title;
+
+    document.getElementById("textInput").value=card.text;
+
+    document.getElementById("colorInput").value=card.color;
+
+}
+
+function newCard(){
+
+    currentCard=-1;
+
+    document.getElementById("titleInput").value="";
+
+    document.getElementById("textInput").value="";
+
+    document.getElementById("colorInput").value="#ffffff";
+
+}
+
+function saveCard(){
+
+    const title=document.getElementById("titleInput").value.trim();
+
+    const text=document.getElementById("textInput").value.trim();
+
+    const color=document.getElementById("colorInput").value;
+
+    if(title=="" || text==""){
+
+        alert("Bitte Titel und Text eingeben.");
+
+        return;
+
+    }
+
+    if(currentCard==-1){
+
+        cards.push({
+
+            title,
+
+            text,
+
+            color
+
+        });
+
+    }else{
+
+        cards[currentCard]={
+
+            title,
+
+            text,
+
+            color
+
+        };
+
+    }
+
+    saveCards();
+
+    deck=[...cards];
+
+    shuffle(deck);
+
+    refreshCardList();
+
+    alert("Gespeichert.");
+
+}
+
 // -----------------------------
 // Neue Karte
 // -----------------------------
@@ -149,28 +253,42 @@ function addCard() {
 // -----------------------------
 // Karte löschen
 // -----------------------------
-function deleteCard() {
+function deleteCard(){
 
-    const index = document.getElementById("deleteSelect").value;
+    if(currentCard==-1){
 
-    if (index === "") return;
+        alert("Bitte zuerst eine Karte laden.");
 
-    cards.splice(index, 1);
+        return;
+
+    }
+
+    if(!confirm("Diese Karte wirklich löschen?")){
+
+        return;
+
+    }
+
+    cards.splice(currentCard,1);
+
+    currentCard=-1;
 
     saveCards();
 
-    deck = [...cards];
+    deck=[...cards];
 
     shuffle(deck);
 
-    container.innerHTML = "";
+    refreshCardList();
+
+    newCard();
 
 }
 
 // -----------------------------
 // Dropdown aktualisieren
 // -----------------------------
-function refreshDeleteList() {
+function refreshCardList(); {
 
     const select = document.getElementById("deleteSelect");
 
