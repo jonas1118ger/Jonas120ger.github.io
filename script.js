@@ -1,58 +1,48 @@
-// -----------------------------
+// ===============================
 // Standardkarten
-// -----------------------------
+// ===============================
 const defaultCards = [
     {
         title: "Mut",
-        text: "Heute darfst du einen kleinen Schritt aus deiner Komfortzone wagen.",
-        color: "#ffffff"
+        text: "Trinke {1-5} Schlucke.",
+        color: "#ffd54f"
     },
     {
-        title: "Dankbarkeit",
-        text: "Denke heute an drei Dinge, für die du wirklich dankbar bist.",
-        color: "#fff5b7"
+        title: "Glück",
+        text: "Verteile {2-8} Schlucke.",
+        color: "#81c784"
     },
     {
-        title: "Ruhe",
-        text: "Nimm dir bewusst fünf Minuten Zeit nur für dich.",
-        color: "#d9f7ff"
-    },
-    {
-        title: "Freude",
-        text: "Suche heute bewusst nach einem kleinen Glücksmoment.",
-        color: "#ffe0b2"
+        title: "Chaos",
+        text: "Alle trinken {1-3} Schlucke.",
+        color: "#64b5f6"
     }
 ];
 
-// -----------------------------
+// ===============================
 // Karten laden
-// -----------------------------
+// ===============================
 let cards = JSON.parse(localStorage.getItem("cards"));
 
 if (!cards) {
     cards = [...defaultCards];
-    saveCards();
 }
 
-let deck = [...cards];
+let deck = [];
 let currentCard = -1;
 
 const container = document.getElementById("cardContainer");
 
-// -----------------------------
+// ===============================
 // Speichern
-// -----------------------------
-function saveCards(){
-
-    localStorage.setItem("cards",JSON.stringify(cards));
-
-    refreshCardList();
-
+// ===============================
+function saveCards() {
+    localStorage.setItem("cards", JSON.stringify(cards));
 }
 
-// -----------------------------
+// ===============================
 // Mischen
-// -----------------------------
+// ===============================
 function shuffle(array) {
 
     for (let i = array.length - 1; i > 0; i--) {
@@ -65,36 +55,43 @@ function shuffle(array) {
 
 }
 
-shuffle(deck);
-
-// -----------------------------
-// Karte ziehen
-// -----------------------------
+// ===============================
+// Platzhalter ersetzen
+// ===============================
 function replaceVariables(text) {
 
-    return text.replace(/\{(\d+)-(\d+)\}/g, function(match, min, max) {
+    return text.replace(/\{(\d+)-(\d+)\}/g, (match, min, max) => {
 
         min = parseInt(min);
         max = parseInt(max);
 
-        const random =
-            Math.floor(Math.random() * (max - min + 1)) + min;
-
-        return random;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
 
     });
 
 }
 
+// ===============================
+// Deck neu erstellen
+// ===============================
+function resetDeck() {
+
+    deck = [...cards];
+
+    shuffle(deck);
+
+}
+
+// ===============================
+// Karte ziehen
+// ===============================
 function drawCard() {
 
     if (deck.length === 0) {
 
-        alert("Alle Karten wurden gezogen. Der Stapel wird neu gemischt.");
+        resetDeck();
 
-        deck = [...cards];
-
-        shuffle(deck);
+        alert("Alle Karten wurden gezogen. Der Stapel wurde neu gemischt.");
 
     }
 
@@ -103,28 +100,30 @@ function drawCard() {
     container.innerHTML = `
         <div class="card" style="background:${card.color}">
             <h2>${card.title}</h2>
-
             <p>${replaceVariables(card.text)}</p>
-
             <small>Noch ${deck.length} Karten im Stapel</small>
         </div>
     `;
 
 }
 
-function refreshCardList(){
+// ===============================
+// Dropdown aktualisieren
+// ===============================
+function refreshCardList() {
 
-    const select=document.getElementById("cardSelect");
+    const select = document.getElementById("cardSelect");
 
-    select.innerHTML="";
+    if (!select) return;
 
-    cards.forEach((card,index)=>{
+    select.innerHTML = "";
 
-        const option=document.createElement("option");
+    cards.forEach((card, index) => {
 
-        option.value=index;
+        const option = document.createElement("option");
 
-        option.textContent=card.title;
+        option.value = index;
+        option.textContent = card.title;
 
         select.appendChild(option);
 
@@ -132,95 +131,45 @@ function refreshCardList(){
 
 }
 
-function loadSelectedCard(){
+// ===============================
+// Karte laden
+// ===============================
+function loadSelectedCard() {
 
-    currentCard=document.getElementById("cardSelect").value;
+    const select = document.getElementById("cardSelect");
 
-    const card=cards[currentCard];
+    currentCard = Number(select.value);
 
-    document.getElementById("titleInput").value=card.title;
+    const card = cards[currentCard];
 
-    document.getElementById("textInput").value=card.text;
+    if (!card) return;
 
-    document.getElementById("colorInput").value=card.color;
-
-}
-
-function newCard(){
-
-    currentCard=-1;
-
-    document.getElementById("titleInput").value="";
-
-    document.getElementById("textInput").value="";
-
-    document.getElementById("colorInput").value="#ffffff";
+    document.getElementById("titleInput").value = card.title;
+    document.getElementById("textInput").value = card.text;
+    document.getElementById("colorInput").value = card.color;
 
 }
 
-function saveCard(){
-
-    const title=document.getElementById("titleInput").value.trim();
-
-    const text=document.getElementById("textInput").value.trim();
-
-    const color=document.getElementById("colorInput").value;
-
-    if(title=="" || text==""){
-
-        alert("Bitte Titel und Text eingeben.");
-
-        return;
-
-    }
-
-    if(currentCard==-1){
-
-        cards.push({
-
-            title,
-
-            text,
-
-            color
-
-        });
-
-    }else{
-
-        cards[currentCard]={
-
-            title,
-
-            text,
-
-            color
-
-        };
-
-    }
-
-    saveCards();
-
-    deck=[...cards];
-
-    shuffle(deck);
-
-    refreshCardList();
-
-    alert("Gespeichert.");
-
-}
-
-// -----------------------------
+// ===============================
 // Neue Karte
-// -----------------------------
-function addCard() {
+// ===============================
+function newCard() {
+
+    currentCard = -1;
+
+    document.getElementById("titleInput").value = "";
+    document.getElementById("textInput").value = "";
+    document.getElementById("colorInput").value = "#ffffff";
+
+}
+
+// ===============================
+// Karte speichern
+// ===============================
+function saveCard() {
 
     const title = document.getElementById("titleInput").value.trim();
-
     const text = document.getElementById("textInput").value.trim();
-
     const color = document.getElementById("colorInput").value;
 
     if (title === "" || text === "") {
@@ -231,86 +180,65 @@ function addCard() {
 
     }
 
-    cards.push({
+    const card = {
         title,
         text,
         color
-    });
+    };
+
+    if (currentCard === -1) {
+
+        cards.push(card);
+
+        currentCard = cards.length - 1;
+
+    } else {
+
+        cards[currentCard] = card;
+
+    }
 
     saveCards();
+    refreshCardList();
+    resetDeck();
 
-    deck = [...cards];
-
-    shuffle(deck);
-
-    document.getElementById("titleInput").value = "";
-    document.getElementById("textInput").value = "";
-
-    alert("Karte hinzugefügt.");
+    alert("Karte gespeichert.");
 
 }
 
-// -----------------------------
+// ===============================
 // Karte löschen
-// -----------------------------
-function deleteCard(){
+// ===============================
+function deleteCard() {
 
-    if(currentCard==-1){
+    if (currentCard === -1) {
 
-        alert("Bitte zuerst eine Karte laden.");
-
-        return;
-
-    }
-
-    if(!confirm("Diese Karte wirklich löschen?")){
+        alert("Bitte zuerst eine Karte auswählen.");
 
         return;
 
     }
 
-    cards.splice(currentCard,1);
+    if (!confirm("Diese Karte wirklich löschen?")) {
 
-    currentCard=-1;
+        return;
+
+    }
+
+    cards.splice(currentCard, 1);
+
+    currentCard = -1;
 
     saveCards();
-
-    deck=[...cards];
-
-    shuffle(deck);
-
     refreshCardList();
-
+    resetDeck();
     newCard();
 
 }
 
-// -----------------------------
-// Dropdown aktualisieren
-// -----------------------------
-function refreshCardList(); {
-
-    const select = document.getElementById("deleteSelect");
-
-    select.innerHTML = "";
-
-    cards.forEach((card, index) => {
-
-        const option = document.createElement("option");
-
-        option.value = index;
-
-        option.textContent = card.title;
-
-        select.appendChild(option);
-
-    });
-
-}
-
-// -----------------------------
-// Einstellungen öffnen/schließen
-// -----------------------------
+// ===============================
+// Einstellungen
+// ===============================
 function toggleSettings() {
 
     const overlay = document.getElementById("settingsOverlay");
@@ -327,14 +255,11 @@ function toggleSettings() {
 
 }
 
-// -----------------------------
-// Events
-// -----------------------------
-document.getElementById("drawButton").addEventListener("click", drawCard);
-
-document.getElementById("deck").addEventListener("click", drawCard);
-
-// -----------------------------
+// ===============================
 // Initialisieren
-// -----------------------------
-refreshDeleteList();
+// ===============================
+resetDeck();
+refreshCardList();
+
+document.getElementById("drawButton").addEventListener("click", drawCard);
+document.getElementById("deck").addEventListener("click", drawCard);
