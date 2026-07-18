@@ -100,7 +100,7 @@ function drawCard() {
     container.innerHTML = `
         <div class="card" style="background:${card.color}">
             <h2>${card.title}</h2>
-            <p>${replaceVariables(card.text)}</p>
+            <p>${replaceVariables(card.text).replace(/\n/g, "<br>")}</p>
             <small>Noch ${deck.length} Karten im Stapel</small>
         </div>
     `;
