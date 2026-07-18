@@ -137,6 +137,7 @@ main{
 .card p{
     font-size:20px;
     margin-bottom:20px;
+    white-space:pre-line;
 }
 
 .card small{
