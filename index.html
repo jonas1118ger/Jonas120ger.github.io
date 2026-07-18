@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>🍺 Bierkarten</title>
 
     <link rel="stylesheet" href="style.css">
-</head>
 
+</head>
 <body>
 
 <header>
 
     <h1>🍺 Bierkarten</h1>
 
-    <button id="settingsButton" onclick="toggleSettings()">
+    <button class="settingsButton" onclick="toggleSettings()">
         ⚙️
     </button>
 
@@ -22,79 +24,93 @@
 
 <main>
 
-    <div class="deck-area">
-
-        <div id="deck" class="deck">
-            🍺
-        </div>
-
-        <button id="drawButton">
-            Karte ziehen
-        </button>
-
+    <div id="deck" class="deck">
+        🍺
     </div>
+
+    <button id="drawButton" class="drawButton">
+        Karte ziehen
+    </button>
 
     <div id="cardContainer"></div>
 
 </main>
 
-
 <!-- Einstellungen -->
 
 <div id="settingsOverlay" class="overlay">
 
-<div class="settingsWindow">
+    <div class="settingsWindow">
 
-    <div class="settingsHeader">
+        <div class="settingsHeader">
 
-        <h2>⚙️ Einstellungen</h2>
+            <h2>⚙️ Einstellungen</h2>
 
-        <button class="closeButton" onclick="toggleSettings()">✖</button>
+            <button class="closeButton"
+                    onclick="toggleSettings()">
+                ✖
+            </button>
+
+        </div>
+
+        <hr>
+
+        <h3>📄 Karten</h3>
+
+        <select id="cardSelect"></select>
+
+        <button onclick="loadSelectedCard()">
+            📄 Karte laden
+        </button>
+
+        <button onclick="newCard()">
+            ➕ Neue Karte
+        </button>
+
+        <hr>
+
+        <label>Titel</label>
+
+        <input
+            id="titleInput"
+            type="text"
+            placeholder="Kartentitel">
+
+        <label>Kartentext</label>
+
+        <textarea
+            id="textInput"
+            rows="6"
+            placeholder="Kartentext eingeben..."></textarea>
+
+        <small>
+            Platzhalter für Zufallszahlen:
+            <b>{1-9}</b>,
+            <b>{5-20}</b>,
+            <b>{100-500}</b>
+        </small>
+
+        <br><br>
+
+        <label>Farbe</label>
+
+        <input
+            id="colorInput"
+            type="color"
+            value="#ffffff">
+
+        <br><br>
+
+        <button onclick="saveCard()">
+            💾 Speichern
+        </button>
+
+        <button class="deleteButton"
+                onclick="deleteCard()">
+            🗑️ Löschen
+        </button>
 
     </div>
-
-    <hr>
-
-    <h3>Karten</h3>
-
-    <select id="cardSelect"></select>
-
-    <button onclick="loadSelectedCard()">
-        📄 Karte laden
-    </button>
-
-    <hr>
-
-    <input
-        id="titleInput"
-        type="text"
-        placeholder="Kartentitel">
-
-    <textarea
-        id="textInput"
-        rows="5"
-        placeholder="Kartentext"></textarea>
-
-    <label>Kartenfarbe</label>
-
-    <input
-        id="colorInput"
-        type="color"
-        value="#ffffff">
-
-    <button onclick="newCard()">
-        ➕ Neue Karte
-    </button>
-
-    <button onclick="saveCard()">
-        💾 Speichern
-    </button>
-
-    <button onclick="deleteCard()">
-        🗑️ Karte löschen
-    </button>
-
-</div>
 
 </div>
 
