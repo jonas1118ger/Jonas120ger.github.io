@@ -15,6 +15,7 @@ body{
     min-height:100vh;
 }
 
+
 /* ==========================
    Header
 ========================== */
@@ -22,7 +23,9 @@ body{
 header{
     background:#1d3557;
     color:white;
+
     padding:18px;
+
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -32,143 +35,251 @@ header h1{
     font-size:28px;
 }
 
+
+/* ==========================
+   Einstellungs-Button
+========================== */
+
 .settingsButton{
+
     width:46px;
     height:46px;
+
     border:none;
     border-radius:50%;
+
     background:white;
+
     cursor:pointer;
+
     font-size:24px;
+
     transition:.2s;
+
 }
 
 .settingsButton:hover{
+
     transform:rotate(90deg);
+
 }
+
 
 /* ==========================
    Hauptbereich
 ========================== */
 
 main{
+
     display:flex;
+
     flex-direction:column;
+
     align-items:center;
+
     padding:30px 20px;
+
 }
+
 
 /* ==========================
    Kartenstapel
 ========================== */
 
 .deck{
+
     width:140px;
     height:190px;
+
     background:#1d3557;
+
     color:white;
+
     border-radius:18px;
+
     display:flex;
+
     justify-content:center;
+
     align-items:center;
+
     font-size:70px;
+
     cursor:pointer;
-    box-shadow:0 8px 20px rgba(0,0,0,.2);
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.2);
+
     transition:.25s;
+
+    user-select:none;
+
 }
 
 .deck:hover{
+
     transform:scale(1.05);
+
 }
+
 
 /* ==========================
    Ziehbutton
 ========================== */
 
 .drawButton{
+
     margin-top:25px;
+
     padding:15px 35px;
+
     border:none;
+
     border-radius:12px;
+
     background:#1d3557;
+
     color:white;
+
     font-size:18px;
+
     cursor:pointer;
+
     transition:.2s;
+
 }
 
 .drawButton:hover{
+
     background:#274c77;
+
 }
+
 
 /* ==========================
    Gezogene Karte
 ========================== */
 
 #cardContainer{
+
     width:100%;
+
     display:flex;
+
     justify-content:center;
+
+    align-items:center;
+
     margin-top:35px;
+
 }
 
+
 .card{
+
     width:100%;
+
     max-width:420px;
+
     min-height:240px;
+
     border-radius:18px;
+
     padding:25px;
-    box-shadow:0 8px 20px rgba(0,0,0,.15);
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.15);
 
     display:flex;
+
     flex-direction:column;
+
     justify-content:center;
+
     align-items:center;
 
     text-align:center;
 
-    animation:fadeIn .3s ease;
+    animation:
+        fadeIn .3s ease;
+
 }
+
 
 .card h2{
+
     margin-bottom:15px;
+
 }
+
 
 .card p{
+
+    width:100%;
+
     font-size:20px;
+
     margin-bottom:20px;
+
     white-space:pre-line;
+
+    overflow-wrap:anywhere;
+
 }
 
+
 .card small{
+
     color:#666;
+
 }
+
 
 /* ==========================
    Overlay
 ========================== */
 
 .overlay{
+
     display:none;
+
     position:fixed;
+
     inset:0;
-    background:rgba(0,0,0,.45);
+
+    background:
+        rgba(0,0,0,.45);
 
     justify-content:center;
+
     align-items:center;
 
     padding:20px;
 
     overflow-y:auto;
+
+    z-index:1000;
+
 }
 
+
+/* Wird von JavaScript aktiviert */
+
+.overlay.open{
+
+    display:flex;
+
+}
+
+
 /* ==========================
-   Einstellungen
+   Einstellungsfenster
 ========================== */
 
 .settingsWindow{
 
     width:100%;
+
     max-width:520px;
 
     background:white;
@@ -181,7 +292,11 @@ main{
 
     overflow-y:auto;
 
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.25);
+
 }
+
 
 .settingsHeader{
 
@@ -195,23 +310,60 @@ main{
 
 }
 
+
+.settingsHeader h2{
+
+    font-size:22px;
+
+}
+
+
+/* ==========================
+   Schließen-Button
+========================== */
+
 .closeButton{
 
-    border:none;
+    border:none !important;
 
-    background:none;
+    background:none !important;
 
-    font-size:26px;
+    color:#333 !important;
+
+    font-size:26px !important;
 
     cursor:pointer;
 
+    width:auto !important;
+
+    padding:4px 8px !important;
+
+    margin:0 !important;
+
 }
+
+
+.closeButton:hover{
+
+    background:#eee !important;
+
+}
+
+
+/* ==========================
+   Überschriften
+========================== */
 
 .settingsWindow h3{
 
     margin:15px 0;
 
 }
+
+
+/* ==========================
+   Labels
+========================== */
 
 .settingsWindow label{
 
@@ -225,7 +377,12 @@ main{
 
 }
 
-.settingsWindow input[type=text],
+
+/* ==========================
+   Eingabefelder
+========================== */
+
+.settingsWindow input[type="text"],
 .settingsWindow textarea,
 .settingsWindow select{
 
@@ -235,13 +392,17 @@ main{
 
     border-radius:10px;
 
-    border:1px solid #ccc;
+    border:
+        1px solid #ccc;
 
     font-size:16px;
 
     margin-bottom:12px;
 
+    background:white;
+
 }
+
 
 .settingsWindow textarea{
 
@@ -251,7 +412,12 @@ main{
 
 }
 
-.settingsWindow input[type=color]{
+
+/* ==========================
+   Farbauswahl
+========================== */
+
+.settingsWindow input[type="color"]{
 
     width:100%;
 
@@ -265,8 +431,48 @@ main{
 
 }
 
+
 /* ==========================
-   Buttons
+   Hinweistext
+========================== */
+
+.hint{
+
+    display:block;
+
+    line-height:1.5;
+
+    color:#666;
+
+}
+
+
+.backupText{
+
+    font-size:14px;
+
+    line-height:1.5;
+
+    color:#666;
+
+    margin-bottom:12px;
+
+}
+
+
+/* ==========================
+   Datei-Auswahl verstecken
+========================== */
+
+.hiddenFileInput{
+
+    display:none !important;
+
+}
+
+
+/* ==========================
+   Buttons im Einstellungsmenü
 ========================== */
 
 .settingsWindow button{
@@ -293,23 +499,31 @@ main{
 
 }
 
+
 .settingsWindow button:hover{
 
     background:#274c77;
 
 }
 
-.deleteButton{
+
+/* ==========================
+   Löschen-Buttons
+========================== */
+
+.settingsWindow .deleteButton{
 
     background:#c0392b !important;
 
 }
 
-.deleteButton:hover{
+
+.settingsWindow .deleteButton:hover{
 
     background:#962d22 !important;
 
 }
+
 
 /* ==========================
    Trennlinien
@@ -321,12 +535,14 @@ hr{
 
     border:none;
 
-    border-top:1px solid #ddd;
+    border-top:
+        1px solid #ddd;
 
 }
 
+
 /* ==========================
-   Animation
+   Karten-Animation
 ========================== */
 
 @keyframes fadeIn{
@@ -334,21 +550,26 @@ hr{
     from{
 
         opacity:0;
-        transform:translateY(15px);
+
+        transform:
+            translateY(15px);
 
     }
 
     to{
 
         opacity:1;
-        transform:translateY(0);
+
+        transform:
+            translateY(0);
 
     }
 
 }
 
+
 /* ==========================
-   Handy
+   Handy / Smartphone
 ========================== */
 
 @media(max-width:600px){
@@ -359,17 +580,57 @@ hr{
 
     }
 
+
+    .settingsButton{
+
+        width:44px;
+
+        height:44px;
+
+        font-size:22px;
+
+    }
+
+
     .deck{
 
         width:120px;
+
         height:170px;
+
         font-size:60px;
 
     }
 
+
     .card{
 
         min-height:210px;
+
+        padding:22px;
+
+    }
+
+
+    .card p{
+
+        font-size:19px;
+
+    }
+
+
+    .settingsWindow{
+
+        max-height:92vh;
+
+        padding:20px;
+
+    }
+
+
+    .settingsHeader h2{
+
+        font-size:20px;
 
     }
 
