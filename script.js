@@ -7,19 +7,22 @@ const defaultCards = [
     {
         title: "Mut",
         text: "Trinke {1-5} Schlucke.",
-        color: "#ffd54f"
+        color: "#ffd54f",
+        category: "Trinken"
     },
 
     {
         title: "Glück",
         text: "Verteile {2-8} Schlucke.",
-        color: "#81c784"
+        color: "#81c784",
+        category: "Trinken"
     },
 
     {
         title: "Chaos",
         text: "Alle trinken {1-3} Schlucke.",
-        color: "#64b5f6"
+        color: "#64b5f6",
+        category: "Alle"
     }
 
 ];
@@ -30,7 +33,6 @@ const defaultCards = [
 // ===============================
 
 let cards = loadCardsFromStorage();
-
 
 function loadCardsFromStorage() {
 
@@ -56,14 +58,24 @@ function loadCardsFromStorage() {
 
         }
 
-        return parsed;
+        // Alte Karten bekommen automatisch
+        // die Kategorie "Allgemein"
+
+        return parsed.map(card => ({
+
+            title: card.title || "Ohne Titel",
+
+            text: card.text || "",
+
+            color: card.color || "#ffffff",
+
+            category: card.category || "Allgemein"
+
+        }));
 
     } catch (error) {
 
-        console.error(
-            "Karten konnten nicht geladen werden:",
-            error
-        );
+        console.error(error);
 
         return JSON.parse(
             JSON.stringify(defaultCards)
@@ -83,7 +95,7 @@ const container =
 
 
 // ===============================
-// Karten speichern
+// Speichern
 // ===============================
 
 function saveCards() {
@@ -99,11 +111,6 @@ function saveCards() {
 
     } catch (error) {
 
-        console.error(
-            "Karten konnten nicht gespeichert werden:",
-            error
-        );
-
         alert(
             "Die Karten konnten nicht gespeichert werden."
         );
@@ -116,7 +123,7 @@ function saveCards() {
 
 
 // ===============================
-// Karten mischen
+// Mischen
 // ===============================
 
 function shuffle(array) {
@@ -132,13 +139,8 @@ function shuffle(array) {
                 Math.random() * (i + 1)
             );
 
-        [
-            array[i],
-            array[j]
-        ] = [
-            array[j],
-            array[i]
-        ];
+        [array[i], array[j]] =
+        [array[j], array[i]];
 
     }
 
@@ -146,13 +148,7 @@ function shuffle(array) {
 
 
 // ===============================
-// Zufallszahlen ersetzen
-//
-// Beispiele:
-//
-// {1-5}
-// {5-20}
-// {100-500}
+// Zufallszahlen
 // ===============================
 
 function replaceVariables(text) {
@@ -162,18 +158,12 @@ function replaceVariables(text) {
         (match, min, max) => {
 
             min = parseInt(min);
-
             max = parseInt(max);
 
             if (min > max) {
 
-                [
-                    min,
-                    max
-                ] = [
-                    max,
-                    min
-                ];
+                [min, max] =
+                [max, min];
 
             }
 
@@ -189,14 +179,73 @@ function replaceVariables(text) {
 
 
 // ===============================
+// Aktuelle Kategorie
+// ===============================
+
+function getSelectedCategory() {
+
+    return document
+        .getElementById("categoryFilter")
+        .value;
+
+}
+
+
+// ===============================
+// Gefilterte Karten
+// ===============================
+
+function getFilteredCards() {
+
+    const category =
+        getSelectedCategory();
+
+    if (category === "Alle") {
+
+        return [...cards];
+
+    }
+
+    return cards.filter(
+        card =>
+            (card.category || "Allgemein")
+            === category
+    );
+
+}
+
+
+// ===============================
 // Deck neu erstellen
 // ===============================
 
 function resetDeck() {
 
-    deck = [...cards];
+    deck =
+        getFilteredCards();
 
     shuffle(deck);
+
+    updateDeckInfo();
+
+}
+
+
+// ===============================
+// Kartenanzahl anzeigen
+// ===============================
+
+function updateDeckInfo() {
+
+    const info =
+        document.getElementById(
+            "deckInfo"
+        );
+
+    if (!info) return;
+
+    info.textContent =
+        `${deck.length} Karten im Stapel`;
 
 }
 
@@ -210,9 +259,7 @@ function drawCard() {
     if (cards.length === 0) {
 
         alert(
-            "Es sind keine Karten vorhanden.\n\n" +
-            "Füge zuerst eine Karte hinzu " +
-            "oder stelle die Standardkarten wieder her."
+            "Es sind keine Karten vorhanden."
         );
 
         return;
@@ -224,10 +271,15 @@ function drawCard() {
 
         resetDeck();
 
-        alert(
-            "Alle Karten wurden gezogen.\n\n" +
-            "Der Stapel wurde neu gemischt."
-        );
+        if (deck.length === 0) {
+
+            alert(
+                "Für diese Kategorie sind keine Karten vorhanden."
+            );
+
+            return;
+
+        }
 
     }
 
@@ -237,12 +289,17 @@ function drawCard() {
     if (!card) return;
 
 
+    updateDeckInfo();
+
+
+    // Karte zunächst unsichtbar
+    // einsetzen
+
     container.innerHTML = `
 
         <div
-            class="card"
-            style="background:${escapeHtml(card.color)}"
-        >
+            class="card cardDrawing"
+            style="background:${escapeHtml(card.color)}">
 
             <h2>
                 ${escapeHtml(card.title)}
@@ -254,13 +311,37 @@ function drawCard() {
                 ).replace(/\n/g, "<br>")}
             </p>
 
+            <div class="cardCategory">
+                ${escapeHtml(
+                    card.category || "Allgemein"
+                )}
+            </div>
+
             <small>
-                Noch ${deck.length} Karten im Stapel
+                Noch ${deck.length} Karten
             </small>
 
         </div>
 
     `;
+
+
+    // Animation starten
+
+    requestAnimationFrame(() => {
+
+        const drawnCard =
+            container.querySelector(".card");
+
+        if (drawnCard) {
+
+            drawnCard.classList.add(
+                "cardVisible"
+            );
+
+        }
+
+    });
 
 }
 
@@ -274,42 +355,146 @@ function escapeHtml(value) {
     return String(value)
 
         .replace(/&/g, "&amp;")
-
         .replace(/</g, "&lt;")
-
         .replace(/>/g, "&gt;")
-
         .replace(/"/g, "&quot;")
-
         .replace(/'/g, "&#039;");
 
 }
 
 
 // ===============================
-// Karten-Dropdown aktualisieren
+// Kategorien aktualisieren
+// ===============================
+
+function refreshCategoryList() {
+
+    const select =
+        document.getElementById(
+            "categoryFilter"
+        );
+
+    if (!select) return;
+
+
+    const current =
+        select.value;
+
+
+    select.innerHTML = `
+
+        <option value="Alle">
+            Alle Kategorien
+        </option>
+
+    `;
+
+
+    const categories =
+        [...new Set(
+            cards.map(
+                card =>
+                    card.category ||
+                    "Allgemein"
+            )
+        )];
+
+
+    categories
+        .sort()
+        .forEach(category => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value = category;
+
+            option.textContent =
+                category;
+
+            select.appendChild(option);
+
+        });
+
+
+    if (
+        categories.includes(current)
+    ) {
+
+        select.value = current;
+
+    } else {
+
+        select.value = "Alle";
+
+    }
+
+}
+
+
+// ===============================
+// Karten suchen + Dropdown
 // ===============================
 
 function refreshCardList() {
 
     const select =
-        document.getElementById("cardSelect");
+        document.getElementById(
+            "cardSelect"
+        );
 
     if (!select) return;
+
+
+    const search =
+        document
+            .getElementById("searchInput")
+            .value
+            .toLowerCase()
+            .trim();
 
 
     select.innerHTML = "";
 
 
-    if (cards.length === 0) {
+    const filtered =
+        cards.filter(card => {
+
+            const title =
+                (card.title || "")
+                .toLowerCase();
+
+            const text =
+                (card.text || "")
+                .toLowerCase();
+
+            const category =
+                (card.category || "Allgemein")
+                .toLowerCase();
+
+
+            return (
+                title.includes(search) ||
+                text.includes(search) ||
+                category.includes(search)
+            );
+
+        });
+
+
+    if (filtered.length === 0) {
 
         const option =
-            document.createElement("option");
-
-        option.value = "";
+            document.createElement(
+                "option"
+            );
 
         option.textContent =
-            "Keine Karten vorhanden";
+            "Keine Karten gefunden";
+
+        option.value = "";
 
         select.appendChild(option);
 
@@ -318,22 +503,24 @@ function refreshCardList() {
     }
 
 
-    cards.forEach(
-        (card, index) => {
+    filtered.forEach(card => {
 
-            const option =
-                document.createElement("option");
+        const index =
+            cards.indexOf(card);
 
-            option.value = index;
+        const option =
+            document.createElement(
+                "option"
+            );
 
-            option.textContent =
-                card.title ||
-                `Karte ${index + 1}`;
+        option.value = index;
 
-            select.appendChild(option);
+        option.textContent =
+            `${card.title} · ${card.category || "Allgemein"}`;
 
-        }
-    );
+        select.appendChild(option);
+
+    });
 
 }
 
@@ -345,13 +532,14 @@ function refreshCardList() {
 function loadSelectedCard() {
 
     const select =
-        document.getElementById("cardSelect");
+        document.getElementById(
+            "cardSelect"
+        );
 
 
     if (
         !select ||
-        select.value === "" ||
-        cards.length === 0
+        select.value === ""
     ) {
 
         alert(
@@ -377,19 +565,26 @@ function loadSelectedCard() {
     document.getElementById(
         "titleInput"
     ).value =
-        card.title || "";
+        card.title;
 
 
     document.getElementById(
         "textInput"
     ).value =
-        card.text || "";
+        card.text;
 
 
     document.getElementById(
         "colorInput"
     ).value =
-        card.color || "#ffffff";
+        card.color;
+
+
+    document.getElementById(
+        "categoryInput"
+    ).value =
+        card.category ||
+        "Allgemein";
 
 }
 
@@ -418,6 +613,12 @@ function newCard() {
     ).value =
         "#ffffff";
 
+
+    document.getElementById(
+        "categoryInput"
+    ).value =
+        "Allgemein";
+
 }
 
 
@@ -429,21 +630,35 @@ function saveCard() {
 
     const title =
         document
-            .getElementById("titleInput")
+            .getElementById(
+                "titleInput"
+            )
             .value
             .trim();
 
 
     const text =
         document
-            .getElementById("textInput")
+            .getElementById(
+                "textInput"
+            )
             .value
             .trim();
 
 
     const color =
         document
-            .getElementById("colorInput")
+            .getElementById(
+                "colorInput"
+            )
+            .value;
+
+
+    const category =
+        document
+            .getElementById(
+                "categoryInput"
+            )
             .value;
 
 
@@ -463,16 +678,16 @@ function saveCard() {
 
     const card = {
 
-        title: title,
+        title,
 
-        text: text,
+        text,
 
-        color: color
+        color,
+
+        category
 
     };
 
-
-    // Neue Karte
 
     if (currentCard === -1) {
 
@@ -481,24 +696,7 @@ function saveCard() {
         currentCard =
             cards.length - 1;
 
-    }
-
-    // Bestehende Karte bearbeiten
-
-    else {
-
-        if (!cards[currentCard]) {
-
-            alert(
-                "Die ausgewählte Karte existiert nicht mehr."
-            );
-
-            newCard();
-
-            return;
-
-        }
-
+    } else {
 
         cards[currentCard] =
             card;
@@ -511,24 +709,9 @@ function saveCard() {
 
     refreshCardList();
 
+    refreshCategoryList();
+
     resetDeck();
-
-
-    const select =
-        document.getElementById(
-            "cardSelect"
-        );
-
-
-    if (
-        select &&
-        currentCard >= 0
-    ) {
-
-        select.value =
-            String(currentCard);
-
-    }
 
 
     alert(
@@ -539,10 +722,10 @@ function saveCard() {
 
 
 // ===============================
-// Einzelne Karte löschen
+// Karte duplizieren
 // ===============================
 
-function deleteCard() {
+function duplicateCard() {
 
     if (currentCard === -1) {
 
@@ -555,13 +738,92 @@ function deleteCard() {
     }
 
 
-    if (!cards[currentCard]) {
+    const original =
+        cards[currentCard];
+
+
+    if (!original) return;
+
+
+    const copy = {
+
+        title:
+            original.title +
+            " (Kopie)",
+
+        text:
+            original.text,
+
+        color:
+            original.color,
+
+        category:
+            original.category ||
+            "Allgemein"
+
+    };
+
+
+    cards.push(copy);
+
+
+    currentCard =
+        cards.length - 1;
+
+
+    saveCards();
+
+    refreshCardList();
+
+    refreshCategoryList();
+
+    resetDeck();
+
+
+    // Kopie direkt laden
+
+    document.getElementById(
+        "titleInput"
+    ).value =
+        copy.title;
+
+
+    document.getElementById(
+        "textInput"
+    ).value =
+        copy.text;
+
+
+    document.getElementById(
+        "colorInput"
+    ).value =
+        copy.color;
+
+
+    document.getElementById(
+        "categoryInput"
+    ).value =
+        copy.category;
+
+
+    alert(
+        "Karte wurde dupliziert."
+    );
+
+}
+
+
+// ===============================
+// Karte löschen
+// ===============================
+
+function deleteCard() {
+
+    if (currentCard === -1) {
 
         alert(
-            "Die ausgewählte Karte existiert nicht mehr."
+            "Bitte zuerst eine Karte laden."
         );
-
-        newCard();
 
         return;
 
@@ -592,6 +854,8 @@ function deleteCard() {
 
     refreshCardList();
 
+    refreshCategoryList();
+
     resetDeck();
 
     newCard();
@@ -605,26 +869,14 @@ function deleteCard() {
 
 
 // ===============================
-// ALLE Karten löschen
+// Alle Karten löschen
 // ===============================
 
 function deleteAllCards() {
 
-    if (cards.length === 0) {
-
-        alert(
-            "Es sind keine Karten vorhanden."
-        );
-
-        return;
-
-    }
-
-
     if (
         !confirm(
-            `Möchtest du wirklich ALLE ${cards.length} Karten löschen?\n\n` +
-            "Du kannst sie nur über ein Backup wiederherstellen."
+            `Möchtest du wirklich ALLE ${cards.length} Karten löschen?`
         )
     ) {
 
@@ -642,6 +894,8 @@ function deleteAllCards() {
 
     refreshCardList();
 
+    refreshCategoryList();
+
     resetDeck();
 
     newCard();
@@ -658,15 +912,14 @@ function deleteAllCards() {
 
 
 // ===============================
-// Standardkarten wiederherstellen
+// Standardkarten
 // ===============================
 
 function restoreDefaultCards() {
 
     if (
         !confirm(
-            "Möchtest du wirklich die Standardkarten wiederherstellen?\n\n" +
-            "Deine aktuellen Karten werden dadurch ersetzt."
+            "Aktuelle Karten durch Standardkarten ersetzen?"
         )
     ) {
 
@@ -677,7 +930,9 @@ function restoreDefaultCards() {
 
     cards =
         JSON.parse(
-            JSON.stringify(defaultCards)
+            JSON.stringify(
+                defaultCards
+            )
         );
 
 
@@ -688,6 +943,8 @@ function restoreDefaultCards() {
 
     refreshCardList();
 
+    refreshCategoryList();
+
     resetDeck();
 
     newCard();
@@ -697,15 +954,14 @@ function restoreDefaultCards() {
 
 
     alert(
-        "Die Standardkarten wurden wiederhergestellt."
+        "Standardkarten wiederhergestellt."
     );
 
 }
 
 
 // ===============================
-// BACKUP
-// Karten sichern
+// Backup exportieren
 // ===============================
 
 function exportCards() {
@@ -713,7 +969,7 @@ function exportCards() {
     if (cards.length === 0) {
 
         alert(
-            "Es sind keine Karten zum Sichern vorhanden."
+            "Keine Karten zum Sichern vorhanden."
         );
 
         return;
@@ -725,7 +981,7 @@ function exportCards() {
 
         app: "Bierkarten",
 
-        version: 1,
+        version: 2,
 
         createdAt:
             new Date().toISOString(),
@@ -735,17 +991,15 @@ function exportCards() {
     };
 
 
-    const data =
-        JSON.stringify(
-            backup,
-            null,
-            2
-        );
-
-
     const blob =
         new Blob(
-            [data],
+            [
+                JSON.stringify(
+                    backup,
+                    null,
+                    2
+                )
+            ],
             {
                 type:
                     "application/json"
@@ -754,9 +1008,7 @@ function exportCards() {
 
 
     const url =
-        URL.createObjectURL(
-            blob
-        );
+        URL.createObjectURL(blob);
 
 
     const link =
@@ -765,37 +1017,25 @@ function exportCards() {
 
     link.href = url;
 
-
     link.download =
         "bierkarten-backup.json";
 
 
-    document
-        .body
-        .appendChild(link);
-
-
     link.click();
-
-
-    document
-        .body
-        .removeChild(link);
 
 
     URL.revokeObjectURL(url);
 
 
     alert(
-        `${cards.length} Karten wurden als Backup gesichert.`
+        "Backup wurde erstellt."
     );
 
 }
 
 
 // ===============================
-// BACKUP
-// Karten wiederherstellen
+// Backup importieren
 // ===============================
 
 function importCards(event) {
@@ -816,197 +1056,90 @@ function importCards(event) {
 
             try {
 
-                const importedData =
+                const data =
                     JSON.parse(
                         e.target.result
                     );
 
 
-                let importedCards;
-
-
-                // Neues Backup-Format
-
-                if (
-                    importedData &&
-                    Array.isArray(
-                        importedData.cards
-                    )
-                ) {
-
-                    importedCards =
-                        importedData.cards;
-
-                }
-
-                // Altes Array-Format
-
-                else if (
-                    Array.isArray(
-                        importedData
-                    )
-                ) {
-
-                    importedCards =
-                        importedData;
-
-                }
-
-                else {
-
-                    throw new Error(
-                        "Ungültiges Backup-Format."
-                    );
-
-                }
+                const imported =
+                    Array.isArray(data)
+                        ? data
+                        : data.cards;
 
 
                 if (
-                    importedCards.length === 0
+                    !Array.isArray(imported)
                 ) {
 
-                    throw new Error(
-                        "Das Backup enthält keine Karten."
-                    );
-
-                }
-
-
-                const validCards =
-                    importedCards.every(
-                        card =>
-
-                            card &&
-
-                            typeof card.title ===
-                                "string" &&
-
-                            typeof card.text ===
-                                "string" &&
-
-                            typeof card.color ===
-                                "string"
-
-                    );
-
-
-                if (!validCards) {
-
-                    throw new Error(
-                        "Ungültige Karten."
-                    );
-
-                }
-
-
-                if (
-                    !confirm(
-                        `Sollen ${importedCards.length} Karten wiederhergestellt werden?\n\n` +
-                        "Die aktuell gespeicherten Karten werden ersetzt."
-                    )
-                ) {
-
-                    event.target.value = "";
-
-                    return;
+                    throw new Error();
 
                 }
 
 
                 cards =
-                    importedCards.map(
+                    imported.map(
                         card => ({
 
                             title:
-                                card.title,
+                                card.title ||
+                                "Ohne Titel",
 
                             text:
-                                card.text,
+                                card.text ||
+                                "",
 
                             color:
-                                card.color
+                                card.color ||
+                                "#ffffff",
+
+                            category:
+                                card.category ||
+                                "Allgemein"
 
                         })
                     );
 
 
+                saveCards();
+
                 currentCard = -1;
 
-
-                if (!saveCards()) {
-
-                    return;
-
-                }
-
-
                 refreshCardList();
+
+                refreshCategoryList();
 
                 resetDeck();
 
                 newCard();
 
 
-                container.innerHTML =
-                    "";
+                alert(
+                    `${cards.length} Karten wiederhergestellt.`
+                );
 
+
+            } catch {
 
                 alert(
-                    `${cards.length} Karten erfolgreich wiederhergestellt.`
+                    "Ungültiges Backup."
                 );
 
             }
 
-            catch(error) {
 
-                console.error(
-                    error
-                );
-
-
-                alert(
-                    "Die Datei konnte nicht gelesen werden.\n\n" +
-                    "Bitte verwende eine gültige Bierkarten-Backup-Datei."
-                );
-
-            }
-
-            finally {
-
-                // Ermöglicht,
-                // dieselbe Datei erneut auszuwählen
-
-                event.target.value =
-                    "";
-
-            }
+            event.target.value = "";
 
         };
 
 
-    reader.onerror =
-        function() {
-
-            alert(
-                "Die Backup-Datei konnte nicht gelesen werden."
-            );
-
-
-            event.target.value =
-                "";
-
-        };
-
-
-    reader.readAsText(
-        file
-    );
+    reader.readAsText(file);
 
 }
 
 
 // ===============================
-// Einstellungen öffnen/schließen
+// Einstellungen
 // ===============================
 
 function toggleSettings() {
@@ -1017,9 +1150,6 @@ function toggleSettings() {
         );
 
 
-    if (!overlay) return;
-
-
     overlay.classList.toggle(
         "open"
     );
@@ -1027,14 +1157,7 @@ function toggleSettings() {
 }
 
 
-// ===============================
-// Klick außerhalb des Menüs
-// schließt Einstellungen
-// ===============================
-
-function closeSettingsOnOverlay(
-    event
-) {
+function closeSettingsOnOverlay(event) {
 
     if (
         event.target.id ===
@@ -1049,7 +1172,27 @@ function closeSettingsOnOverlay(
 
 
 // ===============================
-// ESC schließt Einstellungen
+// Kategorie wechseln
+// ===============================
+
+document
+    .getElementById(
+        "categoryFilter"
+    )
+    .addEventListener(
+        "change",
+        function() {
+
+            resetDeck();
+
+            container.innerHTML = "";
+
+        }
+    );
+
+
+// ===============================
+// ESC
 // ===============================
 
 document.addEventListener(
@@ -1057,8 +1200,7 @@ document.addEventListener(
     function(event) {
 
         if (
-            event.key ===
-            "Escape"
+            event.key === "Escape"
         ) {
 
             const overlay =
@@ -1068,7 +1210,6 @@ document.addEventListener(
 
 
             if (
-                overlay &&
                 overlay.classList.contains(
                     "open"
                 )
@@ -1088,9 +1229,11 @@ document.addEventListener(
 // Initialisieren
 // ===============================
 
-resetDeck();
+refreshCategoryList();
 
 refreshCardList();
+
+resetDeck();
 
 
 document
