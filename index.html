@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>🍺 Bierkarten</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -27,10 +25,20 @@
 
 <main>
 
+    <!-- Kartenstapel -->
+
     <div id="deck" class="deck">
-        <div class="deckCard deckBack">🍺</div>
+
+        <div class="deckCard deckBack">
+            🍺
+        </div>
+
         <div class="deckCard deckMiddle"></div>
-        <div class="deckCard deckTop">🍺</div>
+
+        <div class="deckCard deckTop">
+            🍺
+        </div>
+
     </div>
 
 
@@ -39,12 +47,16 @@
     </div>
 
 
-    <button id="drawButton" class="drawButton">
+    <button
+        id="drawButton"
+        class="drawButton">
+
         Karte ziehen
+
     </button>
 
 
-    <!-- Kategorien -->
+    <!-- Kategorie beim Spielen auswählen -->
 
     <div class="categoryFilter">
 
@@ -52,9 +64,7 @@
             Kategorie:
         </label>
 
-        <select id="categoryFilter">
-            <option value="Alle">Alle Kategorien</option>
-        </select>
+        <select id="categoryFilter"></select>
 
     </div>
 
@@ -66,14 +76,16 @@
 </main>
 
 
-<!-- ==========================================
+
+<!-- =====================================================
      EINSTELLUNGEN
-========================================== -->
+===================================================== -->
 
 <div
     id="settingsOverlay"
     class="overlay"
     onclick="closeSettingsOnOverlay(event)">
+
 
     <div
         class="settingsWindow"
@@ -87,7 +99,9 @@
             <button
                 class="closeButton"
                 onclick="toggleSettings()">
+
                 ✖
+
             </button>
 
         </div>
@@ -96,28 +110,20 @@
         <hr>
 
 
-        <!-- ==========================================
-             SUCHE
-        =========================================== -->
+        <!-- =================================================
+             KARTEN
+        ================================================== -->
 
-        <h3>🔎 Karten suchen</h3>
+        <h3>📄 Karten</h3>
+
 
         <input
             id="searchInput"
             class="searchInput"
             type="search"
-            placeholder="Karte suchen..."
+            placeholder="🔎 Karten suchen..."
             oninput="refreshCardList()">
 
-
-        <hr>
-
-
-        <!-- ==========================================
-             KARTEN
-        =========================================== -->
-
-        <h3>📄 Karten</h3>
 
         <select id="cardSelect"></select>
 
@@ -140,13 +146,10 @@
         <hr>
 
 
-        <!-- ==========================================
-             KARTE BEARBEITEN
-        =========================================== -->
-
         <label for="titleInput">
             Titel
         </label>
+
 
         <input
             id="titleInput"
@@ -158,6 +161,7 @@
             Kartentext
         </label>
 
+
         <textarea
             id="textInput"
             rows="6"
@@ -165,10 +169,13 @@
 
 
         <small class="hint">
+
             Zufallszahlen:
+
             <b>{1-9}</b>,
             <b>{5-20}</b>,
             <b>{100-500}</b>
+
         </small>
 
 
@@ -178,40 +185,22 @@
             Kategorie
         </label>
 
-        <select id="categoryInput">
 
-            <option value="Allgemein">
-                Allgemein
-            </option>
-
-            <option value="Trinken">
-                🍺 Trinken
-            </option>
-
-            <option value="Aufgabe">
-                🎯 Aufgabe
-            </option>
-
-            <option value="Alle">
-                👥 Alle
-            </option>
-
-            <option value="Spezial">
-                🔥 Spezial
-            </option>
-
-            <option value="Lustig">
-                😂 Lustig
-            </option>
-
-        </select>
+        <select id="categoryInput"></select>
 
 
-        <!-- Farbe -->
+        <!-- Eigene Farbe -->
 
-        <label for="colorInput">
-            Farbe
+        <label class="checkboxLabel">
+
+            <input
+                type="checkbox"
+                id="customColorInput">
+
+            Eigene Kartenfarbe verwenden
+
         </label>
+
 
         <input
             id="colorInput"
@@ -219,8 +208,17 @@
             value="#ffffff">
 
 
+        <small class="hint">
+
+            Wenn diese Option deaktiviert ist,
+            verwendet die Karte automatisch
+            die Farbe ihrer Kategorie.
+
+        </small>
+
+
         <button onclick="saveCard()">
-            💾 Speichern
+            💾 Karte speichern
         </button>
 
 
@@ -232,28 +230,110 @@
         <button
             class="deleteButton"
             onclick="deleteCard()">
-            🗑️ Löschen
+
+            🗑️ Karte löschen
+
+        </button>
+
+
+
+        <!-- =================================================
+             KATEGORIEN
+        ================================================== -->
+
+        <hr>
+
+        <h3>🏷️ Kategorien</h3>
+
+
+        <select
+            id="categoryManagerSelect">
+        </select>
+
+
+        <button onclick="loadSelectedCategory()">
+            ✏️ Kategorie bearbeiten
+        </button>
+
+
+        <button onclick="newCategory()">
+            ➕ Neue Kategorie
         </button>
 
 
         <hr>
 
 
-        <!-- ==========================================
+        <label for="categoryNameInput">
+            Kategoriename
+        </label>
+
+
+        <input
+            id="categoryNameInput"
+            type="text"
+            placeholder="z. B. Trinken">
+
+
+        <label for="categoryColorInput">
+            Kategorienfarbe
+        </label>
+
+
+        <input
+            id="categoryColorInput"
+            type="color"
+            value="#ffd54f">
+
+
+        <button onclick="saveCategory()">
+            💾 Kategorie speichern
+        </button>
+
+
+        <button onclick="duplicateCategory()">
+            📋 Kategorie duplizieren
+        </button>
+
+
+        <button
+            class="deleteButton"
+            onclick="deleteCategory()">
+
+            🗑️ Kategorie löschen
+
+        </button>
+
+
+
+        <!-- =================================================
              BACKUP
-        =========================================== -->
+        ================================================== -->
+
+        <hr>
 
         <h3>💾 Backup</h3>
 
+
+        <p class="backupText">
+
+            Das Backup enthält deine Karten
+            und Kategorien.
+
+        </p>
+
+
         <button onclick="exportCards()">
-            💾 Karten sichern
+
+            💾 Karten & Kategorien sichern
+
         </button>
 
 
         <button
             onclick="document.getElementById('importFile').click()">
 
-            📥 Karten wiederherstellen
+            📥 Backup wiederherstellen
 
         </button>
 
@@ -266,8 +346,14 @@
             onchange="importCards(event)">
 
 
+        <hr>
+
+
         <button onclick="restoreDefaultCards()">
-            🔄 Standardkarten wiederherstellen
+
+            🔄 Standardkarten & Kategorien
+            wiederherstellen
+
         </button>
 
 
@@ -278,6 +364,7 @@
             🗑️ Alle Karten löschen
 
         </button>
+
 
     </div>
 
