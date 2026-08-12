@@ -19,9 +19,7 @@
         class="settingsButton"
         onclick="toggleSettings()"
         aria-label="Einstellungen">
-
         ⚙️
-
     </button>
 
 </header>
@@ -29,35 +27,43 @@
 
 <main>
 
-    <!-- Kartenstapel -->
+    <div id="deck" class="deck">
+        <div class="deckCard deckBack">🍺</div>
+        <div class="deckCard deckMiddle"></div>
+        <div class="deckCard deckTop">🍺</div>
+    </div>
 
-    <div
-        id="deck"
-        class="deck"
-        title="Karte ziehen">
 
-        🍺
+    <div id="deckInfo" class="deckInfo">
+        0 Karten
+    </div>
+
+
+    <button id="drawButton" class="drawButton">
+        Karte ziehen
+    </button>
+
+
+    <!-- Kategorien -->
+
+    <div class="categoryFilter">
+
+        <label for="categoryFilter">
+            Kategorie:
+        </label>
+
+        <select id="categoryFilter">
+            <option value="Alle">Alle Kategorien</option>
+        </select>
 
     </div>
 
 
-    <!-- Karte ziehen -->
-
-    <button
-        id="drawButton"
-        class="drawButton">
-
-        Karte ziehen
-
-    </button>
-
-
-    <!-- Hier erscheint die gezogene Karte -->
+    <!-- Gezogene Karte -->
 
     <div id="cardContainer"></div>
 
 </main>
-
 
 
 <!-- ==========================================
@@ -69,13 +75,10 @@
     class="overlay"
     onclick="closeSettingsOnOverlay(event)">
 
-
     <div
         class="settingsWindow"
         onclick="event.stopPropagation()">
 
-
-        <!-- Kopfbereich -->
 
         <div class="settingsHeader">
 
@@ -83,11 +86,8 @@
 
             <button
                 class="closeButton"
-                onclick="toggleSettings()"
-                aria-label="Schließen">
-
+                onclick="toggleSettings()">
                 ✖
-
             </button>
 
         </div>
@@ -97,32 +97,43 @@
 
 
         <!-- ==========================================
-             KARTEN VERWALTEN
+             SUCHE
+        =========================================== -->
+
+        <h3>🔎 Karten suchen</h3>
+
+        <input
+            id="searchInput"
+            class="searchInput"
+            type="search"
+            placeholder="Karte suchen..."
+            oninput="refreshCardList()">
+
+
+        <hr>
+
+
+        <!-- ==========================================
+             KARTEN
         =========================================== -->
 
         <h3>📄 Karten</h3>
 
-
-        <!-- Kartenauswahl -->
-
         <select id="cardSelect"></select>
 
 
-        <!-- Karte laden -->
-
         <button onclick="loadSelectedCard()">
-
             📄 Karte laden
-
         </button>
 
 
-        <!-- Neue Karte -->
-
         <button onclick="newCard()">
-
             ➕ Neue Karte
+        </button>
 
+
+        <button onclick="duplicateCard()">
+            📋 Karte duplizieren
         </button>
 
 
@@ -134,11 +145,8 @@
         =========================================== -->
 
         <label for="titleInput">
-
             Titel
-
         </label>
-
 
         <input
             id="titleInput"
@@ -147,11 +155,8 @@
 
 
         <label for="textInput">
-
             Kartentext
-
         </label>
-
 
         <textarea
             id="textInput"
@@ -160,22 +165,53 @@
 
 
         <small class="hint">
-
-            Platzhalter für Zufallszahlen:
-
+            Zufallszahlen:
             <b>{1-9}</b>,
             <b>{5-20}</b>,
             <b>{100-500}</b>
-
         </small>
 
 
-        <label for="colorInput">
+        <!-- Kategorie -->
 
-            Farbe
-
+        <label for="categoryInput">
+            Kategorie
         </label>
 
+        <select id="categoryInput">
+
+            <option value="Allgemein">
+                Allgemein
+            </option>
+
+            <option value="Trinken">
+                🍺 Trinken
+            </option>
+
+            <option value="Aufgabe">
+                🎯 Aufgabe
+            </option>
+
+            <option value="Alle">
+                👥 Alle
+            </option>
+
+            <option value="Spezial">
+                🔥 Spezial
+            </option>
+
+            <option value="Lustig">
+                😂 Lustig
+            </option>
+
+        </select>
+
+
+        <!-- Farbe -->
+
+        <label for="colorInput">
+            Farbe
+        </label>
 
         <input
             id="colorInput"
@@ -183,23 +219,20 @@
             value="#ffffff">
 
 
-        <!-- Karte speichern -->
-
         <button onclick="saveCard()">
-
             💾 Speichern
-
         </button>
 
 
-        <!-- Karte löschen -->
+        <button onclick="duplicateCard()">
+            📋 Karte duplizieren
+        </button>
+
 
         <button
             class="deleteButton"
             onclick="deleteCard()">
-
             🗑️ Löschen
-
         </button>
 
 
@@ -212,26 +245,10 @@
 
         <h3>💾 Backup</h3>
 
-
-        <p class="backupText">
-
-            Sichere deine Karten als Datei, damit sie
-            auch nach dem Löschen der Browserdaten
-            wiederhergestellt werden können.
-
-        </p>
-
-
-        <!-- Karten exportieren -->
-
         <button onclick="exportCards()">
-
             💾 Karten sichern
-
         </button>
 
-
-        <!-- Karten importieren -->
 
         <button
             onclick="document.getElementById('importFile').click()">
@@ -241,8 +258,6 @@
         </button>
 
 
-        <!-- Unsichtbares Datei-Auswahlfeld -->
-
         <input
             type="file"
             id="importFile"
@@ -251,23 +266,10 @@
             onchange="importCards(event)">
 
 
-        <hr>
-
-
-        <!-- ==========================================
-             STANDARDKARTEN
-        =========================================== -->
-
         <button onclick="restoreDefaultCards()">
-
             🔄 Standardkarten wiederherstellen
-
         </button>
 
-
-        <!-- ==========================================
-             ALLE KARTEN LÖSCHEN
-        =========================================== -->
 
         <button
             class="deleteButton"
@@ -277,14 +279,10 @@
 
         </button>
 
-
     </div>
 
 </div>
 
-
-
-<!-- JavaScript -->
 
 <script src="script.js"></script>
 
