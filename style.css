@@ -1,636 +1,799 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+/* ==========================================================
+   ALLGEMEIN
+========================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-body{
-    background:#f4f4f4;
-    color:#333;
-    min-height:100vh;
-}
-
-
-/* ==========================
-   Header
-========================== */
-
-header{
-    background:#1d3557;
-    color:white;
-    padding:18px;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-header h1{
-    font-size:28px;
+body {
+    background: #f4f4f4;
+    color: #333;
+    min-height: 100vh;
 }
 
 
-.settingsButton{
-    width:46px;
-    height:46px;
+/* ==========================================================
+   HEADER
+========================================================== */
 
-    border:none;
-    border-radius:50%;
+header {
+    background: #1d3557;
+    color: white;
 
-    background:white;
+    padding: 18px;
 
-    cursor:pointer;
-
-    font-size:24px;
-
-    transition:.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.settingsButton:hover{
-    transform:rotate(90deg);
-}
-
-
-/* ==========================
-   Hauptbereich
-========================== */
-
-main{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-
-    padding:30px 20px;
+header h1 {
+    font-size: 28px;
 }
 
 
-/* ==========================
-   Kartenstapel
-========================== */
+/* ==========================================================
+   EINSTELLUNGS-BUTTON
+========================================================== */
 
-.deck{
-    position:relative;
+.settingsButton {
+    width: 46px;
+    height: 46px;
 
-    width:140px;
-    height:190px;
+    border: none;
+    border-radius: 50%;
 
-    cursor:pointer;
+    background: white;
 
-    transition:.25s;
+    cursor: pointer;
+
+    font-size: 24px;
+
+    transition: 0.2s;
 }
 
-.deck:hover{
-    transform:scale(1.05);
+.settingsButton:hover {
+    transform: rotate(90deg);
 }
 
 
-.deckCard{
-    position:absolute;
+/* ==========================================================
+   HAUPTBEREICH
+========================================================== */
 
-    width:140px;
-    height:190px;
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-    border-radius:18px;
+    padding: 30px 20px;
+}
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
 
-    font-size:65px;
+/* ==========================================================
+   KARTENSTAPEL
+========================================================== */
+
+.deck {
+    position: relative;
+
+    width: 140px;
+    height: 190px;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.deck:hover {
+    transform: scale(1.05);
+}
+
+
+.deckCard {
+    position: absolute;
+
+    width: 140px;
+    height: 190px;
+
+    border-radius: 18px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 65px;
 
     box-shadow:
-        0 8px 20px rgba(0,0,0,.2);
+        0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 
-.deckBack{
-    background:#162d4d;
+/* Hintere Karte */
+
+.deckBack {
+    background: #162d4d;
 
     transform:
         rotate(-5deg)
-        translate(-5px,5px);
+        translate(-5px, 5px);
 }
 
 
-.deckMiddle{
-    background:#274c77;
+/* Mittlere Karte */
+
+.deckMiddle {
+    background: #274c77;
 
     transform:
         rotate(3deg)
-        translate(4px,2px);
+        translate(4px, 2px);
 }
 
 
-.deckTop{
-    background:#1d3557;
+/* Oberste Karte */
 
-    z-index:3;
+.deckTop {
+    background: #1d3557;
 
-    transition:.35s;
+    z-index: 3;
+
+    transition: 0.35s;
 }
 
 
-/* Animation des Stapels */
+/* Stapel hebt sich beim Darüberfahren */
 
-.deck:hover .deckTop{
+.deck:hover .deckTop {
     transform:
         translateY(-8px)
         rotate(-2deg);
 }
 
 
-/* ==========================
-   Kartenanzahl
-========================== */
+/* ==========================================================
+   KARTENANZAHL
+========================================================== */
 
-.deckInfo{
-    margin-top:15px;
+.deckInfo {
+    margin-top: 15px;
 
-    color:#666;
+    color: #666;
 
-    font-size:14px;
+    font-size: 14px;
 }
 
 
-/* ==========================
-   Ziehbutton
-========================== */
+/* ==========================================================
+   ZIEH-BUTTON
+========================================================== */
 
-.drawButton{
-    margin-top:20px;
+.drawButton {
+    margin-top: 20px;
 
-    padding:15px 35px;
+    padding: 15px 35px;
 
-    border:none;
-    border-radius:12px;
+    border: none;
+    border-radius: 12px;
 
-    background:#1d3557;
+    background: #1d3557;
 
-    color:white;
+    color: white;
 
-    font-size:18px;
+    font-size: 18px;
 
-    cursor:pointer;
+    cursor: pointer;
 
-    transition:.2s;
+    transition: 0.2s;
 }
 
-.drawButton:hover{
-    background:#274c77;
+.drawButton:hover {
+    background: #274c77;
 
-    transform:translateY(-2px);
-}
-
-
-/* ==========================
-   Kategorie-Filter
-========================== */
-
-.categoryFilter{
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    margin-top:20px;
-}
-
-.categoryFilter label{
-    font-size:14px;
-    font-weight:bold;
-}
-
-.categoryFilter select{
-    padding:9px 12px;
-
-    border:
-        1px solid #ccc;
-
-    border-radius:10px;
-
-    background:white;
-
-    font-size:15px;
+    transform: translateY(-2px);
 }
 
 
-/* ==========================
-   Gezogene Karte
-========================== */
+/* ==========================================================
+   KATEGORIE-FILTER
+========================================================== */
 
-#cardContainer{
-    width:100%;
+.categoryFilter {
+    display: flex;
 
-    display:flex;
+    align-items: center;
 
-    justify-content:center;
+    gap: 8px;
 
-    margin-top:35px;
+    margin-top: 20px;
+}
 
-    perspective:1000px;
+.categoryFilter label {
+    font-size: 14px;
+
+    font-weight: bold;
+}
+
+.categoryFilter select {
+    padding: 9px 12px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 10px;
+
+    background: white;
+
+    font-size: 15px;
+
+    cursor: pointer;
 }
 
 
-.card{
-    width:100%;
+/* ==========================================================
+   GEZOGENE KARTE
+========================================================== */
 
-    max-width:420px;
+#cardContainer {
+    width: 100%;
 
-    min-height:240px;
+    display: flex;
 
-    border-radius:18px;
+    justify-content: center;
 
-    padding:25px;
+    margin-top: 35px;
+
+    perspective: 1000px;
+}
+
+
+.card {
+    width: 100%;
+
+    max-width: 420px;
+
+    min-height: 240px;
+
+    border-radius: 18px;
+
+    padding: 25px;
 
     box-shadow:
-        0 10px 25px rgba(0,0,0,.18);
+        0 10px 25px rgba(0, 0, 0, 0.18);
 
-    display:flex;
+    display: flex;
 
-    flex-direction:column;
+    flex-direction: column;
 
-    justify-content:center;
+    justify-content: center;
 
-    align-items:center;
+    align-items: center;
 
-    text-align:center;
+    text-align: center;
 
-    opacity:0;
+    opacity: 0;
 
     transform:
         translateY(50px)
         rotateX(-25deg)
-        scale(.9);
+        scale(0.9);
 
     transition:
-        opacity .45s ease,
-        transform .45s ease;
+        opacity 0.45s ease,
+        transform 0.45s ease;
 }
 
 
-.cardVisible{
+/* Karte nach Animation */
 
-    opacity:1;
+.cardVisible {
+    opacity: 1;
 
     transform:
         translateY(0)
         rotateX(0)
         scale(1);
-
 }
 
 
-.card h2{
-    margin-bottom:15px;
+.card h2 {
+    margin-bottom: 15px;
+
+    font-size: 28px;
 }
 
 
-.card p{
-    width:100%;
+.card p {
+    width: 100%;
 
-    font-size:20px;
+    font-size: 20px;
 
-    margin-bottom:20px;
+    margin-bottom: 20px;
 
-    white-space:pre-line;
+    white-space: pre-line;
 
-    overflow-wrap:anywhere;
+    overflow-wrap: anywhere;
+
+    line-height: 1.4;
 }
 
 
-.card small{
-    color:#666;
+.card small {
+    color: #666;
 }
 
 
-.cardCategory{
+/* ==========================================================
+   KARTEN-KATEGORIE AUF DER GEZOGENEN KARTE
+========================================================== */
 
-    display:inline-block;
+.cardCategory {
+    display: inline-block;
 
-    padding:6px 12px;
+    padding: 6px 12px;
 
-    border-radius:20px;
+    border-radius: 20px;
 
     background:
-        rgba(255,255,255,.55);
+        rgba(255, 255, 255, 0.55);
 
-    font-size:13px;
+    font-size: 13px;
 
-    margin-bottom:12px;
+    margin-bottom: 12px;
 
+    font-weight: bold;
 }
 
 
-/* ==========================
-   Overlay
-========================== */
+/* ==========================================================
+   OVERLAY
+========================================================== */
 
-.overlay{
-    display:none;
+.overlay {
+    display: none;
 
-    position:fixed;
+    position: fixed;
 
-    inset:0;
+    inset: 0;
 
     background:
-        rgba(0,0,0,.45);
+        rgba(0, 0, 0, 0.45);
 
-    justify-content:center;
+    justify-content: center;
 
-    align-items:center;
+    align-items: center;
 
-    padding:20px;
+    padding: 20px;
 
-    overflow-y:auto;
+    overflow-y: auto;
 
-    z-index:1000;
+    z-index: 1000;
 }
 
 
-.overlay.open{
-    display:flex;
+/* Overlay geöffnet */
+
+.overlay.open {
+    display: flex;
 }
 
 
-/* ==========================
-   Einstellungen
-========================== */
+/* ==========================================================
+   EINSTELLUNGSFENSTER
+========================================================== */
 
-.settingsWindow{
+.settingsWindow {
+    width: 100%;
 
-    width:100%;
+    max-width: 520px;
 
-    max-width:520px;
+    background: white;
 
-    background:white;
+    border-radius: 18px;
 
-    border-radius:18px;
+    padding: 25px;
 
-    padding:25px;
+    max-height: 90vh;
 
-    max-height:90vh;
-
-    overflow-y:auto;
+    overflow-y: auto;
 
     box-shadow:
-        0 12px 35px rgba(0,0,0,.25);
+        0 12px 35px rgba(0, 0, 0, 0.25);
 }
 
 
-.settingsHeader{
+/* ==========================================================
+   EINSTELLUNGS-HEADER
+========================================================== */
 
-    display:flex;
+.settingsHeader {
+    display: flex;
 
-    justify-content:space-between;
+    justify-content: space-between;
 
-    align-items:center;
+    align-items: center;
 
-    margin-bottom:15px;
+    margin-bottom: 15px;
 }
 
 
-.closeButton{
-
-    border:none !important;
-
-    background:none !important;
-
-    color:#333 !important;
-
-    font-size:26px !important;
-
-    width:auto !important;
-
-    padding:4px 8px !important;
-
-    margin:0 !important;
+.settingsHeader h2 {
+    font-size: 22px;
 }
 
 
-.closeButton:hover{
-    background:#eee !important;
+/* ==========================================================
+   SCHLIESSEN-BUTTON
+========================================================== */
+
+.closeButton {
+    border: none !important;
+
+    background: none !important;
+
+    color: #333 !important;
+
+    font-size: 26px !important;
+
+    width: auto !important;
+
+    padding: 4px 8px !important;
+
+    margin: 0 !important;
+
+    cursor: pointer;
+}
+
+.closeButton:hover {
+    background: #eee !important;
+
+    transform: none !important;
 }
 
 
-.settingsWindow h3{
-    margin:15px 0;
+/* ==========================================================
+   ÜBERSCHRIFTEN
+========================================================== */
+
+.settingsWindow h3 {
+    margin: 15px 0;
+
+    font-size: 18px;
 }
 
 
-.settingsWindow label{
+/* ==========================================================
+   LABELS
+========================================================== */
 
-    display:block;
+.settingsWindow label {
+    display: block;
 
-    margin-top:18px;
+    margin-top: 18px;
 
-    margin-bottom:6px;
+    margin-bottom: 6px;
 
-    font-weight:bold;
+    font-weight: bold;
 }
 
 
-/* ==========================
-   Eingabefelder
-========================== */
+/* ==========================================================
+   TEXTFELDER / SELECTS
+========================================================== */
 
 .settingsWindow input[type="text"],
 .settingsWindow input[type="search"],
 .settingsWindow textarea,
-.settingsWindow select{
+.settingsWindow select {
+    width: 100%;
 
-    width:100%;
+    padding: 12px;
 
-    padding:12px;
+    border-radius: 10px;
 
-    border-radius:10px;
+    border: 1px solid #ccc;
 
-    border:
-        1px solid #ccc;
+    font-size: 16px;
 
-    font-size:16px;
+    margin-bottom: 12px;
 
-    margin-bottom:12px;
+    background: white;
 
-    background:white;
+    outline: none;
+
+    transition: 0.2s;
 }
 
 
-.settingsWindow textarea{
+.settingsWindow input[type="text"]:focus,
+.settingsWindow input[type="search"]:focus,
+.settingsWindow textarea:focus,
+.settingsWindow select:focus {
+    border-color: #1d3557;
 
-    resize:vertical;
-
-    min-height:120px;
+    box-shadow:
+        0 0 0 2px rgba(29, 53, 87, 0.1);
 }
 
 
-/* ==========================
-   Farbauswahl
-========================== */
+.settingsWindow textarea {
+    resize: vertical;
 
-.settingsWindow input[type="color"]{
-
-    width:100%;
-
-    height:55px;
-
-    border:none;
-
-    margin-bottom:18px;
-
-    cursor:pointer;
+    min-height: 120px;
 }
 
 
-/* ==========================
-   Suchfeld
-========================== */
+/* ==========================================================
+   SUCHFELD
+========================================================== */
 
-.searchInput{
-
-    background:
-        #fafafa !important;
+.searchInput {
+    background: #fafafa !important;
 }
 
 
-/* ==========================
-   Hinweise
-========================== */
+/* ==========================================================
+   FARBAUSWAHL
+========================================================== */
 
-.hint{
+.settingsWindow input[type="color"] {
+    width: 100%;
 
-    display:block;
+    height: 55px;
 
-    line-height:1.5;
+    border: none;
 
-    color:#666;
+    margin-bottom: 18px;
+
+    cursor: pointer;
+
+    background: transparent;
 }
 
 
-.hiddenFileInput{
-    display:none !important;
+/* Deaktiviertes Farbfeld */
+
+.settingsWindow input[type="color"]:disabled {
+    cursor: not-allowed;
 }
 
 
-/* ==========================
-   Buttons
-========================== */
+/* ==========================================================
+   CHECKBOX
+========================================================== */
 
-.settingsWindow button{
+.checkboxLabel {
+    display: flex !important;
 
-    width:100%;
+    align-items: center;
 
-    padding:14px;
+    gap: 10px;
 
-    border:none;
+    font-weight: normal !important;
 
-    border-radius:10px;
+    cursor: pointer;
 
-    background:#1d3557;
+    margin-top: 18px;
 
-    color:white;
-
-    font-size:16px;
-
-    cursor:pointer;
-
-    margin-top:10px;
-
-    transition:.2s;
+    margin-bottom: 10px;
 }
 
 
-.settingsWindow button:hover{
+.checkboxLabel input {
+    width: 20px;
 
-    background:#274c77;
+    height: 20px;
 
-    transform:translateY(-1px);
+    cursor: pointer;
+
+    accent-color: #1d3557;
 }
 
 
-.deleteButton{
+/* ==========================================================
+   HINWEISE
+========================================================== */
 
-    background:#c0392b !important;
+.hint {
+    display: block;
+
+    line-height: 1.5;
+
+    color: #666;
+
+    font-size: 13px;
 }
 
 
-.deleteButton:hover{
+/* ==========================================================
+   BACKUP-TEXT
+========================================================== */
 
-    background:#962d22 !important;
+.backupText {
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    color: #666;
+
+    margin-bottom: 10px;
 }
 
 
-/* ==========================
-   Backup
-========================== */
+/* ==========================================================
+   VERSTECKTES DATEIFELD
+========================================================== */
 
-.backupText{
-
-    font-size:14px;
-
-    line-height:1.5;
-
-    color:#666;
+.hiddenFileInput {
+    display: none !important;
 }
 
 
-/* ==========================
-   Trennlinien
-========================== */
+/* ==========================================================
+   BUTTONS IM EINSTELLUNGSMENÜ
+========================================================== */
 
-hr{
+.settingsWindow button {
+    width: 100%;
 
-    margin:20px 0;
+    padding: 14px;
 
-    border:none;
+    border: none;
+
+    border-radius: 10px;
+
+    background: #1d3557;
+
+    color: white;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    margin-top: 10px;
+
+    transition: 0.2s;
+}
+
+
+.settingsWindow button:hover {
+    background: #274c77;
+
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================================
+   LÖSCH-BUTTONS
+========================================================== */
+
+.deleteButton {
+    background: #c0392b !important;
+}
+
+
+.deleteButton:hover {
+    background: #962d22 !important;
+}
+
+
+/* ==========================================================
+   TRENNLINIEN
+========================================================== */
+
+hr {
+    margin: 20px 0;
+
+    border: none;
 
     border-top:
         1px solid #ddd;
 }
 
 
-/* ==========================
-   Handy
-========================== */
+/* ==========================================================
+   KLEINE ANIMATION FÜR DAS EINSTELLUNGSFENSTER
+========================================================== */
 
-@media(max-width:600px){
+.overlay.open .settingsWindow {
+    animation:
+        settingsAppear 0.25s ease;
+}
 
-    header h1{
-        font-size:22px;
+
+@keyframes settingsAppear {
+
+    from {
+        opacity: 0;
+
+        transform:
+            scale(0.95)
+            translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            scale(1)
+            translateY(0);
+    }
+
+}
+
+
+/* ==========================================================
+   HANDY
+========================================================== */
+
+@media (max-width: 600px) {
+
+    header h1 {
+        font-size: 22px;
     }
 
 
-    .deck{
-        width:120px;
-        height:170px;
+    .settingsButton {
+        width: 44px;
+
+        height: 44px;
+
+        font-size: 22px;
     }
 
 
-    .deckCard{
-        width:120px;
-        height:170px;
+    .deck {
+        width: 120px;
 
-        font-size:55px;
+        height: 170px;
     }
 
 
-    .card{
-        min-height:210px;
+    .deckCard {
+        width: 120px;
 
-        padding:22px;
+        height: 170px;
+
+        font-size: 55px;
     }
 
 
-    .card p{
-        font-size:19px;
+    .card {
+        min-height: 210px;
+
+        padding: 22px;
     }
 
 
-    .settingsWindow{
-        max-height:92vh;
+    .card h2 {
+        font-size: 24px;
+    }
 
-        padding:20px;
+
+    .card p {
+        font-size: 19px;
+    }
+
+
+    .settingsWindow {
+        max-height: 92vh;
+
+        padding: 20px;
+    }
+
+
+    .categoryFilter {
+        width: 100%;
+
+        justify-content: center;
+    }
+
+
+    .categoryFilter select {
+        max-width: 220px;
     }
 
 }
