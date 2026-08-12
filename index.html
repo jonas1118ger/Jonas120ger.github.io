@@ -1,118 +1,290 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>🍺 Bierkarten</title>
 
     <link rel="stylesheet" href="style.css">
-
 </head>
+
 <body>
 
 <header>
 
     <h1>🍺 Bierkarten</h1>
 
-    <button class="settingsButton" onclick="toggleSettings()">
+    <button
+        class="settingsButton"
+        onclick="toggleSettings()"
+        aria-label="Einstellungen">
+
         ⚙️
+
     </button>
 
 </header>
 
+
 <main>
 
-    <div id="deck" class="deck">
+    <!-- Kartenstapel -->
+
+    <div
+        id="deck"
+        class="deck"
+        title="Karte ziehen">
+
         🍺
+
     </div>
 
-    <button id="drawButton" class="drawButton">
+
+    <!-- Karte ziehen -->
+
+    <button
+        id="drawButton"
+        class="drawButton">
+
         Karte ziehen
+
     </button>
+
+
+    <!-- Hier erscheint die gezogene Karte -->
 
     <div id="cardContainer"></div>
 
 </main>
 
-<!-- Einstellungen -->
 
-<div id="settingsOverlay" class="overlay">
 
-    <div class="settingsWindow">
+<!-- ==========================================
+     EINSTELLUNGEN
+========================================== -->
+
+<div
+    id="settingsOverlay"
+    class="overlay"
+    onclick="closeSettingsOnOverlay(event)">
+
+
+    <div
+        class="settingsWindow"
+        onclick="event.stopPropagation()">
+
+
+        <!-- Kopfbereich -->
 
         <div class="settingsHeader">
 
             <h2>⚙️ Einstellungen</h2>
 
-            <button class="closeButton"
-                    onclick="toggleSettings()">
+            <button
+                class="closeButton"
+                onclick="toggleSettings()"
+                aria-label="Schließen">
+
                 ✖
+
             </button>
 
         </div>
 
+
         <hr>
+
+
+        <!-- ==========================================
+             KARTEN VERWALTEN
+        =========================================== -->
 
         <h3>📄 Karten</h3>
 
+
+        <!-- Kartenauswahl -->
+
         <select id="cardSelect"></select>
 
+
+        <!-- Karte laden -->
+
         <button onclick="loadSelectedCard()">
+
             📄 Karte laden
+
         </button>
 
+
+        <!-- Neue Karte -->
+
         <button onclick="newCard()">
+
             ➕ Neue Karte
+
         </button>
+
 
         <hr>
 
-        <label>Titel</label>
+
+        <!-- ==========================================
+             KARTE BEARBEITEN
+        =========================================== -->
+
+        <label for="titleInput">
+
+            Titel
+
+        </label>
+
 
         <input
             id="titleInput"
             type="text"
             placeholder="Kartentitel">
 
-        <label>Kartentext</label>
+
+        <label for="textInput">
+
+            Kartentext
+
+        </label>
+
 
         <textarea
             id="textInput"
             rows="6"
             placeholder="Kartentext eingeben..."></textarea>
 
-        <small>
+
+        <small class="hint">
+
             Platzhalter für Zufallszahlen:
+
             <b>{1-9}</b>,
             <b>{5-20}</b>,
             <b>{100-500}</b>
+
         </small>
 
-        <br><br>
 
-        <label>Farbe</label>
+        <label for="colorInput">
+
+            Farbe
+
+        </label>
+
 
         <input
             id="colorInput"
             type="color"
             value="#ffffff">
 
-        <br><br>
+
+        <!-- Karte speichern -->
 
         <button onclick="saveCard()">
+
             💾 Speichern
+
         </button>
 
-        <button class="deleteButton"
-                onclick="deleteCard()">
+
+        <!-- Karte löschen -->
+
+        <button
+            class="deleteButton"
+            onclick="deleteCard()">
+
             🗑️ Löschen
+
         </button>
+
+
+        <hr>
+
+
+        <!-- ==========================================
+             BACKUP
+        =========================================== -->
+
+        <h3>💾 Backup</h3>
+
+
+        <p class="backupText">
+
+            Sichere deine Karten als Datei, damit sie
+            auch nach dem Löschen der Browserdaten
+            wiederhergestellt werden können.
+
+        </p>
+
+
+        <!-- Karten exportieren -->
+
+        <button onclick="exportCards()">
+
+            💾 Karten sichern
+
+        </button>
+
+
+        <!-- Karten importieren -->
+
+        <button
+            onclick="document.getElementById('importFile').click()">
+
+            📥 Karten wiederherstellen
+
+        </button>
+
+
+        <!-- Unsichtbares Datei-Auswahlfeld -->
+
+        <input
+            type="file"
+            id="importFile"
+            accept=".json,application/json"
+            class="hiddenFileInput"
+            onchange="importCards(event)">
+
+
+        <hr>
+
+
+        <!-- ==========================================
+             STANDARDKARTEN
+        =========================================== -->
+
+        <button onclick="restoreDefaultCards()">
+
+            🔄 Standardkarten wiederherstellen
+
+        </button>
+
+
+        <!-- ==========================================
+             ALLE KARTEN LÖSCHEN
+        =========================================== -->
+
+        <button
+            class="deleteButton"
+            onclick="deleteAllCards()">
+
+            🗑️ Alle Karten löschen
+
+        </button>
+
 
     </div>
 
 </div>
+
+
+
+<!-- JavaScript -->
 
 <script src="script.js"></script>
 
