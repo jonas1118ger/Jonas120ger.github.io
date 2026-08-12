@@ -1,84 +1,184 @@
-// ===============================
-// Standardkarten
-// ===============================
+// ============================================================
+// STANDARDKATEGORIEN
+// ============================================================
 
-const defaultCards = [
-
+const defaultCategories = [
     {
-        title: "Mut",
-        text: "Trinke {1-5} Schlucke.",
-        color: "#ffd54f",
-        category: "Trinken"
+        name: "Allgemein",
+        color: "#ffffff"
     },
-
     {
-        title: "Glück",
-        text: "Verteile {2-8} Schlucke.",
-        color: "#81c784",
-        category: "Trinken"
+        name: "Trinken",
+        color: "#ffd54f"
     },
-
     {
-        title: "Chaos",
-        text: "Alle trinken {1-3} Schlucke.",
-        color: "#64b5f6",
-        category: "Alle"
+        name: "Aufgabe",
+        color: "#64b5f6"
+    },
+    {
+        name: "Alle",
+        color: "#81c784"
+    },
+    {
+        name: "Spezial",
+        color: "#e57373"
+    },
+    {
+        name: "Lustig",
+        color: "#ba68c8"
     }
-
 ];
 
 
-// ===============================
-// Karten laden
-// ===============================
+// ============================================================
+// STANDARDKARTEN
+// ============================================================
 
-let cards = loadCardsFromStorage();
+const defaultCards = [
+    {
+        title: "Mut",
+        text: "Trinke {1-5} Schlucke.",
+        category: "Trinken",
+        color: "#ffd54f",
+        customColor: false
+    },
+    {
+        title: "Glück",
+        text: "Verteile {2-8} Schlucke.",
+        category: "Trinken",
+        color: "#ffd54f",
+        customColor: false
+    },
+    {
+        title: "Chaos",
+        text: "Alle trinken {1-3} Schlucke.",
+        category: "Alle",
+        color: "#81c784",
+        customColor: false
+    }
+];
 
-function loadCardsFromStorage() {
+
+// ============================================================
+// HILFSFUNKTION
+// ============================================================
+
+function cloneData(data) {
+
+    return JSON.parse(
+        JSON.stringify(data)
+    );
+
+}
+
+
+// ============================================================
+// KATEGORIEN LADEN
+// ============================================================
+
+let categories = loadCategories();
+
+
+function loadCategories() {
 
     try {
 
-        const saved = localStorage.getItem("cards");
+        const saved =
+            localStorage.getItem("categories");
+
 
         if (!saved) {
 
-            return JSON.parse(
-                JSON.stringify(defaultCards)
+            return cloneData(
+                defaultCategories
             );
 
         }
 
-        const parsed = JSON.parse(saved);
+
+        const parsed =
+            JSON.parse(saved);
+
 
         if (!Array.isArray(parsed)) {
 
-            return JSON.parse(
-                JSON.stringify(defaultCards)
+            return cloneData(
+                defaultCategories
             );
 
         }
 
-        // Alte Karten bekommen automatisch
-        // die Kategorie "Allgemein"
 
-        return parsed.map(card => ({
+        const result = [];
 
-            title: card.title || "Ohne Titel",
 
-            text: card.text || "",
+        parsed.forEach(category => {
 
-            color: card.color || "#ffffff",
+            if (
+                category &&
+                typeof category.name === "string" &&
+                category.name.trim() !== ""
+            ) {
 
-            category: card.category || "Allgemein"
+                result.push({
 
-        }));
+                    name:
+                        category.name.trim(),
+
+                    color:
+                        typeof category.color === "string"
+                            ? category.color
+                            : "#ffffff"
+
+                });
+
+            }
+
+        });
+
+
+        if (result.length === 0) {
+
+            return cloneData(
+                defaultCategories
+            );
+
+        }
+
+
+        // Allgemein darf nicht fehlen
+
+        if (
+            !result.some(
+                category =>
+                    category.name === "Allgemein"
+            )
+        ) {
+
+            result.unshift({
+
+                name: "Allgemein",
+
+                color: "#ffffff"
+
+            });
+
+        }
+
+
+        return result;
+
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Kategorien konnten nicht geladen werden:",
+            error
+        );
 
-        return JSON.parse(
-            JSON.stringify(defaultCards)
+
+        return cloneData(
+            defaultCategories
         );
 
     }
@@ -86,17 +186,139 @@ function loadCardsFromStorage() {
 }
 
 
+// ============================================================
+// KARTEN LADEN
+// ============================================================
+
+let cards = loadCards();
+
+
+function loadCards() {
+
+    try {
+
+        const saved =
+            localStorage.getItem("cards");
+
+
+        if (!saved) {
+
+            return cloneData(
+                defaultCards
+            );
+
+        }
+
+
+        const parsed =
+            JSON.parse(saved);
+
+
+        if (!Array.isArray(parsed)) {
+
+            return cloneData(
+                defaultCards
+            );
+
+        }
+
+
+        return parsed.map(card => {
+
+            const category =
+                card.category ||
+                "Allgemein";
+
+
+            const categoryObject =
+                categories.find(
+                    item =>
+                        item.name === category
+                );
+
+
+            const customColor =
+                card.customColor === true;
+
+
+            return {
+
+                title:
+                    card.title || "Ohne Titel",
+
+                text:
+                    card.text || "",
+
+                category:
+
+                    category,
+
+                customColor:
+
+                    customColor,
+
+                color:
+
+                    customColor
+
+                        ? (
+                            card.color ||
+                            "#ffffff"
+                        )
+
+                        : (
+
+                            categoryObject
+                                ? categoryObject.color
+                                : (
+                                    card.color ||
+                                    "#ffffff"
+                                )
+
+                        )
+
+            };
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Karten konnten nicht geladen werden:",
+            error
+        );
+
+
+        return cloneData(
+            defaultCards
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// GLOBALE VARIABLEN
+// ============================================================
+
 let deck = [];
 
 let currentCard = -1;
 
+let currentCategory = -1;
+
+
 const container =
-    document.getElementById("cardContainer");
+    document.getElementById(
+        "cardContainer"
+    );
 
 
-// ===============================
-// Speichern
-// ===============================
+// ============================================================
+// SPEICHERN
+// ============================================================
 
 function saveCards() {
 
@@ -111,6 +333,8 @@ function saveCards() {
 
     } catch (error) {
 
+        console.error(error);
+
         alert(
             "Die Karten konnten nicht gespeichert werden."
         );
@@ -122,9 +346,49 @@ function saveCards() {
 }
 
 
-// ===============================
-// Mischen
-// ===============================
+function saveCategories() {
+
+    try {
+
+        localStorage.setItem(
+            "categories",
+            JSON.stringify(categories)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Die Kategorien konnten nicht gespeichert werden."
+        );
+
+        return false;
+
+    }
+
+}
+
+
+// ============================================================
+// KATEGORIE SUCHEN
+// ============================================================
+
+function getCategoryByName(name) {
+
+    return categories.find(
+        category =>
+            category.name === name
+    );
+
+}
+
+
+// ============================================================
+// MISCHEN
+// ============================================================
 
 function shuffle(array) {
 
@@ -139,17 +403,23 @@ function shuffle(array) {
                 Math.random() * (i + 1)
             );
 
-        [array[i], array[j]] =
-        [array[j], array[i]];
+
+        [
+            array[i],
+            array[j]
+        ] = [
+            array[j],
+            array[i]
+        ];
 
     }
 
 }
 
 
-// ===============================
-// Zufallszahlen
-// ===============================
+// ============================================================
+// ZUFALLSZAHLEN
+// ============================================================
 
 function replaceVariables(text) {
 
@@ -157,15 +427,25 @@ function replaceVariables(text) {
         /\{(\d+)-(\d+)\}/g,
         (match, min, max) => {
 
-            min = parseInt(min);
-            max = parseInt(max);
+            min =
+                parseInt(min);
+
+            max =
+                parseInt(max);
+
 
             if (min > max) {
 
-                [min, max] =
-                [max, min];
+                [
+                    min,
+                    max
+                ] = [
+                    max,
+                    min
+                ];
 
             }
+
 
             return Math.floor(
                 Math.random() *
@@ -178,62 +458,65 @@ function replaceVariables(text) {
 }
 
 
-// ===============================
-// Aktuelle Kategorie
-// ===============================
+// ============================================================
+// KATEGORIE-FILTER
+// ============================================================
 
 function getSelectedCategory() {
 
     return document
-        .getElementById("categoryFilter")
+        .getElementById(
+            "categoryFilter"
+        )
         .value;
 
 }
 
 
-// ===============================
-// Gefilterte Karten
-// ===============================
-
 function getFilteredCards() {
 
-    const category =
+    const selected =
         getSelectedCategory();
 
-    if (category === "Alle") {
+
+    if (
+        selected ===
+        "Alle Kategorien"
+    ) {
 
         return [...cards];
 
     }
 
+
     return cards.filter(
         card =>
-            (card.category || "Allgemein")
-            === category
+            (
+                card.category ||
+                "Allgemein"
+            ) === selected
     );
 
 }
 
 
-// ===============================
-// Deck neu erstellen
-// ===============================
+// ============================================================
+// DECK NEU AUFBAUEN
+// ============================================================
 
 function resetDeck() {
 
     deck =
         getFilteredCards();
 
+
     shuffle(deck);
+
 
     updateDeckInfo();
 
 }
 
-
-// ===============================
-// Kartenanzahl anzeigen
-// ===============================
 
 function updateDeckInfo() {
 
@@ -242,7 +525,9 @@ function updateDeckInfo() {
             "deckInfo"
         );
 
+
     if (!info) return;
+
 
     info.textContent =
         `${deck.length} Karten im Stapel`;
@@ -250,9 +535,9 @@ function updateDeckInfo() {
 }
 
 
-// ===============================
-// Karte ziehen
-// ===============================
+// ============================================================
+// KARTE ZIEHEN
+// ============================================================
 
 function drawCard() {
 
@@ -271,6 +556,7 @@ function drawCard() {
 
         resetDeck();
 
+
         if (deck.length === 0) {
 
             alert(
@@ -284,7 +570,9 @@ function drawCard() {
     }
 
 
-    const card = deck.pop();
+    const card =
+        deck.pop();
+
 
     if (!card) return;
 
@@ -292,33 +580,46 @@ function drawCard() {
     updateDeckInfo();
 
 
-    // Karte zunächst unsichtbar
-    // einsetzen
+    const category =
+        card.category ||
+        "Allgemein";
+
 
     container.innerHTML = `
 
         <div
-            class="card cardDrawing"
+            class="card"
             style="background:${escapeHtml(card.color)}">
 
+            <div class="cardCategory">
+
+                ${escapeHtml(category)}
+
+            </div>
+
             <h2>
+
                 ${escapeHtml(card.title)}
+
             </h2>
 
             <p>
+
                 ${escapeHtml(
-                    replaceVariables(card.text)
-                ).replace(/\n/g, "<br>")}
+                    replaceVariables(
+                        card.text
+                    )
+                ).replace(
+                    /\n/g,
+                    "<br>"
+                )}
+
             </p>
 
-            <div class="cardCategory">
-                ${escapeHtml(
-                    card.category || "Allgemein"
-                )}
-            </div>
-
             <small>
+
                 Noch ${deck.length} Karten
+
             </small>
 
         </div>
@@ -331,7 +632,10 @@ function drawCard() {
     requestAnimationFrame(() => {
 
         const drawnCard =
-            container.querySelector(".card");
+            container.querySelector(
+                ".card"
+            );
+
 
         if (drawnCard) {
 
@@ -346,97 +650,240 @@ function drawCard() {
 }
 
 
-// ===============================
-// HTML-Sicherheit
-// ===============================
+// ============================================================
+// HTML SICHERHEIT
+// ============================================================
 
 function escapeHtml(value) {
 
     return String(value)
 
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
-// ===============================
-// Kategorien aktualisieren
-// ===============================
+// ============================================================
+// KATEGORIE-FILTER AKTUALISIEREN
+// ============================================================
 
-function refreshCategoryList() {
+function refreshCategoryFilter() {
 
     const select =
         document.getElementById(
             "categoryFilter"
         );
 
+
     if (!select) return;
 
 
-    const current =
+    const previous =
         select.value;
 
 
-    select.innerHTML = `
-
-        <option value="Alle">
-            Alle Kategorien
-        </option>
-
-    `;
+    select.innerHTML = "";
 
 
-    const categories =
-        [...new Set(
-            cards.map(
-                card =>
-                    card.category ||
-                    "Allgemein"
-            )
-        )];
+    const allOption =
+        document.createElement(
+            "option"
+        );
 
 
-    categories
-        .sort()
-        .forEach(category => {
+    allOption.value =
+        "Alle Kategorien";
+
+
+    allOption.textContent =
+        "Alle Kategorien";
+
+
+    select.appendChild(
+        allOption
+    );
+
+
+    categories.forEach(
+        category => {
 
             const option =
                 document.createElement(
                     "option"
                 );
 
-            option.value = category;
+
+            option.value =
+                category.name;
+
 
             option.textContent =
-                category;
+                category.name;
 
-            select.appendChild(option);
 
-        });
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    const exists =
+        [...select.options].some(
+            option =>
+                option.value ===
+                previous
+        );
+
+
+    select.value =
+        exists
+            ? previous
+            : "Alle Kategorien";
+
+}
+
+
+// ============================================================
+// KATEGORIE-AUSWAHL FÜR KARTE
+// ============================================================
+
+function refreshCategoryInput() {
+
+    const select =
+        document.getElementById(
+            "categoryInput"
+        );
+
+
+    if (!select) return;
+
+
+    const previous =
+        select.value;
+
+
+    select.innerHTML = "";
+
+
+    categories.forEach(
+        category => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                category.name;
+
+
+            option.textContent =
+                category.name;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
 
 
     if (
-        categories.includes(current)
+        categories.some(
+            category =>
+                category.name ===
+                previous
+        )
     ) {
 
-        select.value = current;
+        select.value =
+            previous;
 
     } else {
 
-        select.value = "Alle";
+        select.value =
+            "Allgemein";
 
     }
 
 }
 
 
-// ===============================
-// Karten suchen + Dropdown
-// ===============================
+// ============================================================
+// KATEGORIE-MANAGER AKTUALISIEREN
+// ============================================================
+
+function refreshCategoryManager() {
+
+    const select =
+        document.getElementById(
+            "categoryManagerSelect"
+        );
+
+
+    if (!select) return;
+
+
+    select.innerHTML = "";
+
+
+    categories.forEach(
+        (category, index) => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                index;
+
+
+            option.textContent =
+                `${category.name} · ${category.color}`;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// KARTENLISTE / SUCHFUNKTION
+// ============================================================
 
 function refreshCardList() {
 
@@ -445,12 +892,15 @@ function refreshCardList() {
             "cardSelect"
         );
 
+
     if (!select) return;
 
 
     const search =
         document
-            .getElementById("searchInput")
+            .getElementById(
+                "searchInput"
+            )
             .value
             .toLowerCase()
             .trim();
@@ -463,71 +913,100 @@ function refreshCardList() {
         cards.filter(card => {
 
             const title =
-                (card.title || "")
-                .toLowerCase();
+                (
+                    card.title ||
+                    ""
+                ).toLowerCase();
+
 
             const text =
-                (card.text || "")
-                .toLowerCase();
+                (
+                    card.text ||
+                    ""
+                ).toLowerCase();
+
 
             const category =
-                (card.category || "Allgemein")
-                .toLowerCase();
+                (
+                    card.category ||
+                    "Allgemein"
+                ).toLowerCase();
 
 
             return (
+
                 title.includes(search) ||
+
                 text.includes(search) ||
+
                 category.includes(search)
+
             );
 
         });
 
 
-    if (filtered.length === 0) {
+    if (
+        filtered.length === 0
+    ) {
 
         const option =
             document.createElement(
                 "option"
             );
 
-        option.textContent =
-            "Keine Karten gefunden";
 
         option.value = "";
 
-        select.appendChild(option);
+
+        option.textContent =
+            "Keine Karten gefunden";
+
+
+        select.appendChild(
+            option
+        );
+
 
         return;
 
     }
 
 
-    filtered.forEach(card => {
+    filtered.forEach(
+        card => {
 
-        const index =
-            cards.indexOf(card);
+            const index =
+                cards.indexOf(card);
 
-        const option =
-            document.createElement(
-                "option"
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                index;
+
+
+            option.textContent =
+                `${card.title} · ${card.category || "Allgemein"}`;
+
+
+            select.appendChild(
+                option
             );
 
-        option.value = index;
-
-        option.textContent =
-            `${card.title} · ${card.category || "Allgemein"}`;
-
-        select.appendChild(option);
-
-    });
+        }
+    );
 
 }
 
 
-// ===============================
-// Karte laden
-// ===============================
+// ============================================================
+// KARTE LADEN
+// ============================================================
 
 function loadSelectedCard() {
 
@@ -552,14 +1031,33 @@ function loadSelectedCard() {
 
 
     currentCard =
-        Number(select.value);
+        Number(
+            select.value
+        );
 
+
+    loadCardIntoEditor(
+        currentCard
+    );
+
+}
+
+
+// ============================================================
+// KARTE IN EDITOR LADEN
+// ============================================================
+
+function loadCardIntoEditor(index) {
 
     const card =
-        cards[currentCard];
+        cards[index];
 
 
     if (!card) return;
+
+
+    currentCard =
+        index;
 
 
     document.getElementById(
@@ -575,23 +1073,33 @@ function loadSelectedCard() {
 
 
     document.getElementById(
-        "colorInput"
-    ).value =
-        card.color;
-
-
-    document.getElementById(
         "categoryInput"
     ).value =
         card.category ||
         "Allgemein";
 
+
+    document.getElementById(
+        "customColorInput"
+    ).checked =
+        card.customColor === true;
+
+
+    document.getElementById(
+        "colorInput"
+    ).value =
+        card.color ||
+        "#ffffff";
+
+
+    updateColorInputState();
+
 }
 
 
-// ===============================
-// Neue Karte
-// ===============================
+// ============================================================
+// NEUE KARTE
+// ============================================================
 
 function newCard() {
 
@@ -609,22 +1117,73 @@ function newCard() {
 
 
     document.getElementById(
-        "colorInput"
-    ).value =
-        "#ffffff";
-
-
-    document.getElementById(
         "categoryInput"
     ).value =
         "Allgemein";
 
+
+    document.getElementById(
+        "customColorInput"
+    ).checked =
+        false;
+
+
+    const category =
+        getCategoryByName(
+            "Allgemein"
+        );
+
+
+    document.getElementById(
+        "colorInput"
+    ).value =
+        category
+            ? category.color
+            : "#ffffff";
+
+
+    updateColorInputState();
+
 }
 
 
-// ===============================
-// Karte speichern
-// ===============================
+// ============================================================
+// FARBE AKTIVIEREN / DEAKTIVIEREN
+// ============================================================
+
+function updateColorInputState() {
+
+    const checkbox =
+        document.getElementById(
+            "customColorInput"
+        );
+
+
+    const colorInput =
+        document.getElementById(
+            "colorInput"
+        );
+
+
+    const custom =
+        checkbox.checked;
+
+
+    colorInput.disabled =
+        !custom;
+
+
+    colorInput.style.opacity =
+        custom
+            ? "1"
+            : "0.5";
+
+}
+
+
+// ============================================================
+// KARTE SPEICHERN
+// ============================================================
 
 function saveCard() {
 
@@ -646,20 +1205,36 @@ function saveCard() {
             .trim();
 
 
-    const color =
-        document
-            .getElementById(
-                "colorInput"
-            )
-            .value;
-
-
     const category =
-        document
-            .getElementById(
-                "categoryInput"
-            )
-            .value;
+        document.getElementById(
+            "categoryInput"
+        ).value;
+
+
+    const customColor =
+        document.getElementById(
+            "customColorInput"
+        ).checked;
+
+
+    const categoryObject =
+        getCategoryByName(
+            category
+        );
+
+
+    const color =
+        customColor
+
+            ? document.getElementById(
+                "colorInput"
+            ).value
+
+            : (
+                categoryObject
+                    ? categoryObject.color
+                    : "#ffffff"
+            );
 
 
     if (
@@ -682,16 +1257,21 @@ function saveCard() {
 
         text,
 
+        category,
+
         color,
 
-        category
+        customColor
 
     };
 
 
-    if (currentCard === -1) {
+    if (
+        currentCard === -1
+    ) {
 
         cards.push(card);
+
 
         currentCard =
             cards.length - 1;
@@ -704,12 +1284,12 @@ function saveCard() {
     }
 
 
-    if (!saveCards()) return;
+    saveCards();
 
 
     refreshCardList();
 
-    refreshCategoryList();
+    refreshCategoryFilter();
 
     resetDeck();
 
@@ -721,13 +1301,15 @@ function saveCard() {
 }
 
 
-// ===============================
-// Karte duplizieren
-// ===============================
+// ============================================================
+// KARTE DUPLIZIEREN
+// ============================================================
 
 function duplicateCard() {
 
-    if (currentCard === -1) {
+    if (
+        currentCard === -1
+    ) {
 
         alert(
             "Bitte zuerst eine Karte laden."
@@ -748,18 +1330,20 @@ function duplicateCard() {
     const copy = {
 
         title:
-            original.title +
-            " (Kopie)",
+            `${original.title} (Kopie)`,
 
         text:
             original.text,
 
+        category:
+            original.category ||
+            "Allgemein",
+
         color:
             original.color,
 
-        category:
-            original.category ||
-            "Allgemein"
+        customColor:
+            original.customColor === true
 
     };
 
@@ -773,37 +1357,17 @@ function duplicateCard() {
 
     saveCards();
 
+
     refreshCardList();
 
-    refreshCategoryList();
+    refreshCategoryFilter();
 
     resetDeck();
 
 
-    // Kopie direkt laden
-
-    document.getElementById(
-        "titleInput"
-    ).value =
-        copy.title;
-
-
-    document.getElementById(
-        "textInput"
-    ).value =
-        copy.text;
-
-
-    document.getElementById(
-        "colorInput"
-    ).value =
-        copy.color;
-
-
-    document.getElementById(
-        "categoryInput"
-    ).value =
-        copy.category;
+    loadCardIntoEditor(
+        currentCard
+    );
 
 
     alert(
@@ -813,13 +1377,15 @@ function duplicateCard() {
 }
 
 
-// ===============================
-// Karte löschen
-// ===============================
+// ============================================================
+// KARTE LÖSCHEN
+// ============================================================
 
 function deleteCard() {
 
-    if (currentCard === -1) {
+    if (
+        currentCard === -1
+    ) {
 
         alert(
             "Bitte zuerst eine Karte laden."
@@ -830,9 +1396,16 @@ function deleteCard() {
     }
 
 
+    const card =
+        cards[currentCard];
+
+
+    if (!card) return;
+
+
     if (
         !confirm(
-            "Diese Karte wirklich löschen?"
+            `„${card.title}“ wirklich löschen?`
         )
     ) {
 
@@ -852,9 +1425,10 @@ function deleteCard() {
 
     saveCards();
 
+
     refreshCardList();
 
-    refreshCategoryList();
+    refreshCategoryFilter();
 
     resetDeck();
 
@@ -868,15 +1442,469 @@ function deleteCard() {
 }
 
 
-// ===============================
-// Alle Karten löschen
-// ===============================
+// ============================================================
+// KATEGORIE LADEN
+// ============================================================
+
+function loadSelectedCategory() {
+
+    const select =
+        document.getElementById(
+            "categoryManagerSelect"
+        );
+
+
+    if (
+        !select ||
+        select.value === ""
+    ) {
+
+        return;
+
+    }
+
+
+    currentCategory =
+        Number(
+            select.value
+        );
+
+
+    const category =
+        categories[currentCategory];
+
+
+    if (!category) return;
+
+
+    document.getElementById(
+        "categoryNameInput"
+    ).value =
+        category.name;
+
+
+    document.getElementById(
+        "categoryColorInput"
+    ).value =
+        category.color;
+
+}
+
+
+// ============================================================
+// NEUE KATEGORIE
+// ============================================================
+
+function newCategory() {
+
+    currentCategory = -1;
+
+
+    document.getElementById(
+        "categoryNameInput"
+    ).value = "";
+
+
+    document.getElementById(
+        "categoryColorInput"
+    ).value =
+        "#ffffff";
+
+}
+
+
+// ============================================================
+// KATEGORIE SPEICHERN
+// ============================================================
+
+function saveCategory() {
+
+    const name =
+        document
+            .getElementById(
+                "categoryNameInput"
+            )
+            .value
+            .trim();
+
+
+    const color =
+        document.getElementById(
+            "categoryColorInput"
+        ).value;
+
+
+    if (
+        name === ""
+    ) {
+
+        alert(
+            "Bitte einen Kategorienamen eingeben."
+        );
+
+        return;
+
+    }
+
+
+    // Prüfen, ob Name bereits existiert
+
+    const duplicate =
+        categories.some(
+            (category, index) =>
+
+                category.name.toLowerCase()
+                    === name.toLowerCase()
+
+                &&
+
+                index !== currentCategory
+
+        );
+
+
+    if (duplicate) {
+
+        alert(
+            "Diese Kategorie existiert bereits."
+        );
+
+        return;
+
+    }
+
+
+    // Neue Kategorie
+
+    if (
+        currentCategory === -1
+    ) {
+
+        categories.push({
+
+            name,
+
+            color
+
+        });
+
+
+    }
+
+    // Bestehende Kategorie
+
+    else {
+
+        const oldName =
+            categories[
+                currentCategory
+            ].name;
+
+
+        categories[
+            currentCategory
+        ] = {
+
+            name,
+
+            color
+
+        };
+
+
+        // Alle Karten dieser Kategorie
+        // automatisch anpassen
+
+        cards.forEach(
+            card => {
+
+                if (
+                    (
+                        card.category ||
+                        "Allgemein"
+                    ) === oldName
+                ) {
+
+                    card.category =
+                        name;
+
+
+                    // Nur Karten ohne
+                    // eigene Farbe übernehmen
+                    // die neue Kategorienfarbe
+
+                    if (
+                        card.customColor !== true
+                    ) {
+
+                        card.color =
+                            color;
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    saveCategories();
+
+    saveCards();
+
+
+    refreshCategoryManager();
+
+    refreshCategoryInput();
+
+    refreshCategoryFilter();
+
+    refreshCardList();
+
+    resetDeck();
+
+
+    alert(
+        "Kategorie gespeichert."
+    );
+
+}
+
+
+// ============================================================
+// KATEGORIE DUPLIZIEREN
+// ============================================================
+
+function duplicateCategory() {
+
+    if (
+        currentCategory === -1
+    ) {
+
+        alert(
+            "Bitte zuerst eine Kategorie laden."
+        );
+
+        return;
+
+    }
+
+
+    const original =
+        categories[
+            currentCategory
+        ];
+
+
+    if (!original) return;
+
+
+    let newName =
+        `${original.name} (Kopie)`;
+
+
+    let counter = 2;
+
+
+    while (
+        categories.some(
+            category =>
+                category.name ===
+                newName
+        )
+    ) {
+
+        newName =
+            `${original.name} (Kopie ${counter})`;
+
+
+        counter++;
+
+    }
+
+
+    categories.push({
+
+        name:
+            newName,
+
+        color:
+            original.color
+
+    });
+
+
+    currentCategory =
+        categories.length - 1;
+
+
+    saveCategories();
+
+
+    refreshCategoryManager();
+
+    refreshCategoryInput();
+
+    refreshCategoryFilter();
+
+
+    alert(
+        "Kategorie wurde dupliziert."
+    );
+
+}
+
+
+// ============================================================
+// KATEGORIE LÖSCHEN
+// ============================================================
+
+function deleteCategory() {
+
+    if (
+        currentCategory === -1
+    ) {
+
+        alert(
+            "Bitte zuerst eine Kategorie laden."
+        );
+
+        return;
+
+    }
+
+
+    const category =
+        categories[
+            currentCategory
+        ];
+
+
+    if (!category) return;
+
+
+    if (
+        category.name ===
+        "Allgemein"
+    ) {
+
+        alert(
+            "Die Kategorie „Allgemein“ kann nicht gelöscht werden."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !confirm(
+            `Kategorie „${category.name}“ wirklich löschen?\n\n` +
+            "Die Karten dieser Kategorie werden auf „Allgemein“ gesetzt."
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const general =
+        getCategoryByName(
+            "Allgemein"
+        );
+
+
+    cards.forEach(
+        card => {
+
+            if (
+                (
+                    card.category ||
+                    "Allgemein"
+                ) === category.name
+            ) {
+
+                card.category =
+                    "Allgemein";
+
+
+                if (
+                    card.customColor !== true
+                ) {
+
+                    card.color =
+                        general
+                            ? general.color
+                            : "#ffffff";
+
+                }
+
+            }
+
+        }
+    );
+
+
+    categories.splice(
+        currentCategory,
+        1
+    );
+
+
+    currentCategory = -1;
+
+
+    saveCategories();
+
+    saveCards();
+
+
+    refreshCategoryManager();
+
+    refreshCategoryInput();
+
+    refreshCategoryFilter();
+
+    refreshCardList();
+
+    resetDeck();
+
+    newCategory();
+
+
+    alert(
+        "Kategorie gelöscht."
+    );
+
+}
+
+
+// ============================================================
+// ALLE KARTEN LÖSCHEN
+// ============================================================
 
 function deleteAllCards() {
 
     if (
+        cards.length === 0
+    ) {
+
+        alert(
+            "Es sind keine Karten vorhanden."
+        );
+
+        return;
+
+    }
+
+
+    if (
         !confirm(
-            `Möchtest du wirklich ALLE ${cards.length} Karten löschen?`
+            `Möchtest du wirklich ALLE ${cards.length} Karten löschen?\n\n` +
+            "Die Kategorien bleiben erhalten."
         )
     ) {
 
@@ -887,14 +1915,14 @@ function deleteAllCards() {
 
     cards = [];
 
+
     currentCard = -1;
 
 
     saveCards();
 
-    refreshCardList();
 
-    refreshCategoryList();
+    refreshCardList();
 
     resetDeck();
 
@@ -911,15 +1939,16 @@ function deleteAllCards() {
 }
 
 
-// ===============================
-// Standardkarten
-// ===============================
+// ============================================================
+// STANDARDKARTEN + KATEGORIEN
+// ============================================================
 
 function restoreDefaultCards() {
 
     if (
         !confirm(
-            "Aktuelle Karten durch Standardkarten ersetzen?"
+            "Möchtest du wirklich die Standardkarten und Kategorien wiederherstellen?\n\n" +
+            "Deine aktuellen Karten und Kategorien werden ersetzt."
         )
     ) {
 
@@ -928,65 +1957,75 @@ function restoreDefaultCards() {
     }
 
 
+    categories =
+        cloneData(
+            defaultCategories
+        );
+
+
     cards =
-        JSON.parse(
-            JSON.stringify(
-                defaultCards
-            )
+        cloneData(
+            defaultCards
         );
 
 
     currentCard = -1;
 
+    currentCategory = -1;
+
+
+    saveCategories();
 
     saveCards();
 
-    refreshCardList();
 
-    refreshCategoryList();
+    refreshCategoryManager();
+
+    refreshCategoryInput();
+
+    refreshCategoryFilter();
+
+    refreshCardList();
 
     resetDeck();
 
     newCard();
+
+    newCategory();
 
 
     container.innerHTML = "";
 
 
     alert(
-        "Standardkarten wiederhergestellt."
+        "Standardkarten und Kategorien wurden wiederhergestellt."
     );
 
 }
 
 
-// ===============================
-// Backup exportieren
-// ===============================
+// ============================================================
+// BACKUP EXPORTIEREN
+// ============================================================
 
 function exportCards() {
 
-    if (cards.length === 0) {
-
-        alert(
-            "Keine Karten zum Sichern vorhanden."
-        );
-
-        return;
-
-    }
-
-
     const backup = {
 
-        app: "Bierkarten",
+        app:
+            "Bierkarten",
 
-        version: 2,
+        version:
+            3,
 
         createdAt:
             new Date().toISOString(),
 
-        cards: cards
+        cards:
+            cards,
+
+        categories:
+            categories
 
     };
 
@@ -1008,35 +2047,57 @@ function exportCards() {
 
 
     const url =
-        URL.createObjectURL(blob);
+        URL.createObjectURL(
+            blob
+        );
 
 
     const link =
-        document.createElement("a");
+        document.createElement(
+            "a"
+        );
 
 
-    link.href = url;
+    link.href =
+        url;
+
 
     link.download =
         "bierkarten-backup.json";
 
 
+    document
+        .body
+        .appendChild(
+            link
+        );
+
+
     link.click();
 
 
-    URL.revokeObjectURL(url);
+    document
+        .body
+        .removeChild(
+            link
+        );
+
+
+    URL.revokeObjectURL(
+        url
+    );
 
 
     alert(
-        "Backup wurde erstellt."
+        "Karten und Kategorien wurden gesichert."
     );
 
 }
 
 
-// ===============================
-// Backup importieren
-// ===============================
+// ============================================================
+// BACKUP IMPORTIEREN
+// ============================================================
 
 function importCards(event) {
 
@@ -1062,67 +2123,201 @@ function importCards(event) {
                     );
 
 
-                const imported =
-                    Array.isArray(data)
-                        ? data
-                        : data.cards;
+                let importedCards;
 
+
+                let importedCategories;
+
+
+                // Neues Backup
 
                 if (
-                    !Array.isArray(imported)
+                    data &&
+                    Array.isArray(
+                        data.cards
+                    )
                 ) {
 
-                    throw new Error();
+                    importedCards =
+                        data.cards;
+
+
+                    importedCategories =
+                        Array.isArray(
+                            data.categories
+                        )
+                            ? data.categories
+                            : null;
 
                 }
 
 
+                // Altes Backup
+                // nur mit Karten
+
+                else if (
+                    Array.isArray(data)
+                ) {
+
+                    importedCards =
+                        data;
+
+
+                    importedCategories =
+                        null;
+
+                }
+
+
+                else {
+
+                    throw new Error(
+                        "Ungültiges Backup."
+                    );
+
+                }
+
+
+                // Kategorien übernehmen
+
+                if (
+                    importedCategories
+                ) {
+
+                    categories =
+                        loadImportedCategories(
+                            importedCategories
+                        );
+
+                }
+
+                else {
+
+                    categories =
+                        cloneData(
+                            defaultCategories
+                        );
+
+                }
+
+
+                // Karten vorbereiten
+
                 cards =
-                    imported.map(
-                        card => ({
+                    importedCards.map(
+                        card => {
 
-                            title:
-                                card.title ||
-                                "Ohne Titel",
-
-                            text:
-                                card.text ||
-                                "",
-
-                            color:
-                                card.color ||
-                                "#ffffff",
-
-                            category:
+                            const category =
                                 card.category ||
-                                "Allgemein"
+                                "Allgemein";
 
-                        })
+
+                            const categoryObject =
+                                getCategoryByName(
+                                    category
+                                );
+
+
+                            const customColor =
+                                card.customColor === true;
+
+
+                            return {
+
+                                title:
+                                    card.title ||
+                                    "Ohne Titel",
+
+                                text:
+                                    card.text ||
+                                    "",
+
+                                category:
+
+                                    category,
+
+                                customColor:
+
+                                    customColor,
+
+                                color:
+
+                                    customColor
+
+                                        ? (
+                                            card.color ||
+                                            "#ffffff"
+                                        )
+
+                                        : (
+                                            categoryObject
+                                                ? categoryObject.color
+                                                : (
+                                                    card.color ||
+                                                    "#ffffff"
+                                                )
+                                        )
+
+                            };
+
+                        }
                     );
 
 
+                if (
+                    !confirm(
+                        `Sollen ${cards.length} Karten und ${categories.length} Kategorien wiederhergestellt werden?\n\n` +
+                        "Die aktuellen Daten werden ersetzt."
+                    )
+                ) {
+
+                    event.target.value = "";
+
+                    return;
+
+                }
+
+
+                saveCategories();
+
                 saveCards();
+
 
                 currentCard = -1;
 
-                refreshCardList();
+                currentCategory = -1;
 
-                refreshCategoryList();
+
+                refreshCategoryManager();
+
+                refreshCategoryInput();
+
+                refreshCategoryFilter();
+
+                refreshCardList();
 
                 resetDeck();
 
                 newCard();
 
+                newCategory();
+
+
+                container.innerHTML = "";
+
 
                 alert(
-                    `${cards.length} Karten wiederhergestellt.`
+                    "Backup erfolgreich wiederhergestellt."
                 );
 
 
-            } catch {
+            } catch(error) {
+
+                console.error(error);
+
 
                 alert(
-                    "Ungültiges Backup."
+                    "Die Backup-Datei konnte nicht gelesen werden."
                 );
 
             }
@@ -1133,14 +2328,89 @@ function importCards(event) {
         };
 
 
-    reader.readAsText(file);
+    reader.readAsText(
+        file
+    );
 
 }
 
 
-// ===============================
-// Einstellungen
-// ===============================
+// ============================================================
+// IMPORTIERTE KATEGORIEN NORMALISIEREN
+// ============================================================
+
+function loadImportedCategories(data) {
+
+    const result = [];
+
+
+    if (
+        Array.isArray(data)
+    ) {
+
+        data.forEach(
+            category => {
+
+                if (
+                    category &&
+                    typeof category.name ===
+                        "string" &&
+
+                    category.name.trim() !== ""
+                ) {
+
+                    result.push({
+
+                        name:
+                            category.name.trim(),
+
+                        color:
+                            category.color ||
+                            "#ffffff"
+
+                    });
+
+                }
+
+            }
+        );
+
+    }
+
+
+    if (
+        !result.some(
+            category =>
+                category.name ===
+                "Allgemein"
+        )
+    ) {
+
+        result.unshift({
+
+            name:
+                "Allgemein",
+
+            color:
+                "#ffffff"
+
+        });
+
+    }
+
+
+    return result.length
+        ? result
+        : cloneData(
+            defaultCategories
+        );
+
+}
+
+
+// ============================================================
+// EINSTELLUNGEN
+// ============================================================
 
 function toggleSettings() {
 
@@ -1171,9 +2441,97 @@ function closeSettingsOnOverlay(event) {
 }
 
 
-// ===============================
-// Kategorie wechseln
-// ===============================
+// ============================================================
+// KATEGORIE BEI KARTE ÄNDERN
+// ============================================================
+
+document
+    .getElementById(
+        "categoryInput"
+    )
+    .addEventListener(
+        "change",
+        function() {
+
+            const category =
+                getCategoryByName(
+                    this.value
+                );
+
+
+            if (!category) return;
+
+
+            const custom =
+                document
+                    .getElementById(
+                        "customColorInput"
+                    )
+                    .checked;
+
+
+            if (!custom) {
+
+                document
+                    .getElementById(
+                        "colorInput"
+                    )
+                    .value =
+                    category.color;
+
+            }
+
+        }
+    );
+
+
+// ============================================================
+// EIGENE FARBE
+// ============================================================
+
+document
+    .getElementById(
+        "customColorInput"
+    )
+    .addEventListener(
+        "change",
+        function() {
+
+            updateColorInputState();
+
+
+            if (!this.checked) {
+
+                const category =
+                    getCategoryByName(
+                        document
+                            .getElementById(
+                                "categoryInput"
+                            )
+                            .value
+                    );
+
+
+                if (category) {
+
+                    document
+                        .getElementById(
+                            "colorInput"
+                        )
+                        .value =
+                        category.color;
+
+                }
+
+            }
+
+        }
+    );
+
+
+// ============================================================
+// KATEGORIE-FILTER
+// ============================================================
 
 document
     .getElementById(
@@ -1191,9 +2549,9 @@ document
     );
 
 
-// ===============================
+// ============================================================
 // ESC
-// ===============================
+// ============================================================
 
 document.addEventListener(
     "keydown",
@@ -1225,15 +2583,21 @@ document.addEventListener(
 );
 
 
-// ===============================
-// Initialisieren
-// ===============================
+// ============================================================
+// INITIALISIEREN
+// ============================================================
 
-refreshCategoryList();
+refreshCategoryManager();
+
+refreshCategoryInput();
+
+refreshCategoryFilter();
 
 refreshCardList();
 
 resetDeck();
+
+updateColorInputState();
 
 
 document
