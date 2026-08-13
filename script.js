@@ -2010,24 +2010,156 @@ function restoreDefaultCards() {
 
 function exportCards() {
 
-    const backup = {
+    try {
 
-        app:
-            "Bierkarten",
+        const backup = {
 
-        version:
-            3,
+            app: "Bierkarten",
 
-        createdAt:
-            new Date().toISOString(),
+            version: 3,
 
-        cards:
-            cards,
+            createdAt:
+                new Date().toISOString(),
 
-        categories:
-            categories
+            cards: cards,
 
-    };
+            categories: categories
+
+        };
+
+
+        const json =
+            JSON.stringify(
+                backup,
+                null,
+                2
+            );
+
+
+        const blob =
+            new Blob(
+                [json],
+                {
+                    type:
+                        "application/json"
+                }
+            );
+
+
+        const file =
+            new File(
+                [blob],
+                "bierkarten-backup.json",
+                {
+                    type:
+                        "application/json"
+                }
+            );
+
+
+        // iPhone / iPad
+        if (
+            navigator.share &&
+            navigator.canShare &&
+            navigator.canShare({
+                files: [file]
+            })
+        ) {
+
+            navigator.share({
+                title:
+                    "Bierkarten Backup",
+
+                text:
+                    "Backup meiner Bierkarten",
+
+                files:
+                    [file]
+            });
+
+            return;
+        }
+
+
+        // Fallback für andere Browser
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href = url;
+
+        link.download =
+            "bierkarten-backup.json";
+
+        link.style.display =
+            "none";
+
+
+        document
+            .body
+            .appendChild(
+                link
+            );
+
+
+        link.click();
+
+
+        document
+            .body
+            .removeChild(
+                link
+            );
+
+
+        setTimeout(
+            () => {
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+            },
+            1000
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Backup-Fehler:",
+            error
+        );
+
+
+        if (
+            error.name ===
+            "AbortError"
+        ) {
+
+            return;
+
+        }
+
+
+        alert(
+            "Das Backup konnte nicht erstellt werden.\n\n" +
+            "Fehler: " +
+            error.message
+        );
+
+    }
+
+}
 
 
     const blob =
